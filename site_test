@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEREGRINE — 旅人のための詩的案内</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf9f6;
+    --text: #1a1916;
+    --text-secondary: #6b6a65;
+    --text-tertiary: #a09e99;
+    --border: rgba(26,25,22,0.12);
+    --border-mid: rgba(26,25,22,0.25);
+    --surface: rgba(26,25,22,0.04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f0e0c;
+      --text: #e8e6e0;
+      --text-secondary: #9a9892;
+      --text-tertiary: #5a5855;
+      --border: rgba(232,230,224,0.1);
+      --border-mid: rgba(232,230,224,0.2);
+      --surface: rgba(232,230,224,0.04);
+    }
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2.5rem;
+    border-bottom: 0.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .nav-brand {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 0.25em;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2.5rem 4rem;
+    text-align: center;
+    border-bottom: 0.5px solid var(--border);
+    animation: fadeUp 0.9s ease both;
+  }
+
+  .eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.75;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 0.5px solid var(--border-mid);
+    padding: 0.85rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s;
+    background: transparent;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .hero-cta:hover {
+    background: var(--surface);
+    border-color: var(--text);
+  }
+
+  /* CARDS */
+  .cards-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .card {
+    padding: 2.5rem 1.75rem;
+    border-right: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.25s;
+    position: relative;
+  }
+
+  .card:last-child { border-right: none; }
+  .card:hover { background: var(--surface); }
+
+  .card-num {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.2em;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-icon {
+    font-size: 26px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 1.45rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-body {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* QUOTE */
+  .quote-section {
+    padding: 5rem 2.5rem;
+    text-align: center;
+    border-bottom: 0.5px solid var(--border);
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+
+  .quote-mark {
+    font-family: 'Cinzel', serif;
+    font-size: 5rem;
+    color: var(--border-mid);
+    line-height: 0.5;
+    display: block;
+    margin-bottom: 1.75rem;
+    user-select: none;
+  }
+
+  .quote-text {
+    font-size: clamp(1.3rem, 2.8vw, 2rem);
+    font-weight: 300;
+    font-style: italic;
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.55;
+  }
+
+  .quote-attr {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+  }
+
+  /* GALLERY */
+  .gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .gallery-item {
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-right: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    transition: background 0.25s;
+  }
+
+  .gallery-item:hover { background: var(--surface); }
+
+  .gallery-item.tall {
+    grid-row: span 2;
+    align-items: flex-end;
+  }
+
+  .gallery-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  .gallery-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+
+  .gallery-title {
+    font-size: 1.15rem;
+    font-weight: 300;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .gallery-content { position: relative; z-index: 1; }
+
+  /* FOOTER */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 2.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-tertiary);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+
+  .ornament::before, .ornament::after {
+    content: '';
+    display: block;
+    height: 0.5px;
+    width: 40px;
+    background: var(--border-mid);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 680px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { gap: 1.2rem; }
+    .hero { padding: 3.5rem 1.25rem 3rem; }
+    .cards-section { grid-template-columns: 1fr 1fr; }
+    .card:nth-child(2n) { border-right: none; }
+    .card:nth-child(n+3) { border-top: 0.5px solid var(--border); }
+    .gallery { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item.tall { grid-row: span 1; min-height: 180px; }
+    footer { flex-direction: column; text-align: center; }
+    .ornament::before, .ornament::after { width: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">PEREGRINE</a>
+  <ul class="nav-links">
+    <li><a href="#">旅の記録</a></li>
+    <li><a href="#">地図</a></li>
+    <li><a href="#">詩集</a></li>
+    <li><a href="#">問合せ</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <p class="eyebrow">Wanderers &amp; Wayfarers</p>
+  <h1 class="hero-title">
+    すべての旅路は、<br>
+    <em>帰還のための</em><br>
+    序章に過ぎない。
+  </h1>
+  <p class="hero-subtitle">見知らぬ地平を越え、星の導きに従い、そして誰もが己の物語を紡ぐ。</p>
+  <a href="#" class="hero-cta">旅を始める &rarr;</a>
+</section>
+
+<section class="cards-section">
+  <article class="card">
+    <p class="card-num">I</p>
+    <i class="ti ti-compass card-icon" aria-hidden="true"></i>
+    <h2 class="card-title">羅針盤の指す先</h2>
+    <p class="card-body">道に迷うことなかれ。道に迷うことこそ、最良の冒険の始まりである。</p>
+  </article>
+  <article class="card">
+    <p class="card-num">II</p>
+    <i class="ti ti-map card-icon" aria-hidden="true"></i>
+    <h2 class="card-title">古地図の余白</h2>
+    <p class="card-body">ここに竜が棲む、と記された場所にこそ、真の発見が待ち受ける。</p>
+  </article>
+  <article class="card">
+    <p class="card-num">III</p>
+    <i class="ti ti-moon card-icon" aria-hidden="true"></i>
+    <h2 class="card-title">夜宿の語らい</h2>
+    <p class="card-body">篝火の傍らで交わした言葉は、宝珠よりも長く心に宿る。</p>
+  </article>
+  <article class="card">
+    <p class="card-num">IV</p>
+    <i class="ti ti-mountain card-icon" aria-hidden="true"></i>
+    <h2 class="card-title">峰の向こう側</h2>
+    <p class="card-body">頂を目指す者は多けれど、その先の景色を語れる者は稀少である。</p>
+  </article>
+</section>
+
+<section class="quote-section">
+  <span class="quote-mark" aria-hidden="true">"</span>
+  <blockquote class="quote-text">出立とは、わずかな死である。そして帰還とは、わずかな再生である。</blockquote>
+  <p class="quote-attr">— 古き旅人の箴言</p>
+</section>
+
+<section class="gallery" aria-label="旅先のギャラリー">
+  <div class="gallery-item tall">
+    <div class="gallery-bg" aria-hidden="true">🌊</div>
+    <div class="gallery-content">
+      <p class="gallery-label">FEATURE</p>
+      <h3 class="gallery-title">大海原への<br>誘い</h3>
+    </div>
+  </div>
+  <div class="gallery-item">
+    <div class="gallery-bg" aria-hidden="true">🏔️</div>
+    <div class="gallery-content">
+      <p class="gallery-label">ROUTE</p>
+      <h3 class="gallery-title">山岳の道</h3>
+    </div>
+  </div>
+  <div class="gallery-item">
+    <div class="gallery-bg" aria-hidden="true">🌿</div>
+    <div class="gallery-content">
+      <p class="gallery-label">GUIDE</p>
+      <h3 class="gallery-title">森の径</h3>
+    </div>
+  </div>
+  <div class="gallery-item">
+    <div class="gallery-bg" aria-hidden="true">⭐</div>
+    <div class="gallery-content">
+      <p class="gallery-label">LORE</p>
+      <h3 class="gallery-title">星読みの術</h3>
+    </div>
+  </div>
+  <div class="gallery-item">
+    <div class="gallery-bg" aria-hidden="true">🏛️</div>
+    <div class="gallery-content">
+      <p class="gallery-label">HISTORY</p>
+      <h3 class="gallery-title">廃墟の記憶</h3>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© PEREGRINE MMXXVI</span>
+  <div class="ornament">旅する者よ、久遠の風とともにあれ</div>
+  <span>ALL ROADS LEAD SOMEWHERE</span>
+</footer>
+
+</body>
+</html>
