@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>効率化セットアップガイド — Claude Code × MIXI CG</title>
+<style>
+:root{
+  --bg:#f5f5f7;--s1:#ffffff;--s2:#f9f9fb;--border:#e4e4e7;
+  --text:#1a1a2e;--muted:#71717a;--accent:#6d4aff;--accent2:#8b5cf6;
+  --green:#16a34a;--cyan:#0891b2;--pink:#db2777;--yellow:#ca8a04;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow:0 4px 16px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),#c084fc);z-index:400;width:0%;transition:width .06s}
+
+nav{position:fixed;top:3px;left:0;right:0;z-index:300;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm)}
+.nav-logo{font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap}
+.nav-logo em{color:var(--accent);font-style:normal}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;transition:color .2s;margin-left:auto}
+.back-link:hover{color:var(--accent)}
+
+.wrap{max-width:860px;margin:0 auto;padding:80px 24px 80px}
+.hero{padding:50px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:#ede9fe;border:1px solid #ddd6fe;color:var(--accent);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(28px,5vw,46px);font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-.02em}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h2{font-size:22px;font-weight:800;margin-bottom:12px}
+h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.lead{font-size:14px;color:var(--muted);line-height:1.8;max-width:600px}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+code{background:#ede9fe;border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:#5b21b6}
+
+.sec-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::before{content:'';width:16px;height:2px;background:var(--accent);display:inline-block}
+.section{margin-bottom:56px}
+
+.card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+
+/* ── Pyramid ── */
+.pyramid{display:flex;flex-direction:column;gap:8px;margin:24px 0}
+.py-level{border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .25s;border:2px solid transparent;position:relative}
+.py-level:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.py-row{display:flex;align-items:center;gap:12px}
+.py-num{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff}
+.py-label-wrap{flex:1}
+.py-label{font-size:14px;font-weight:700;margin-bottom:2px}
+.py-sub{font-size:11.5px;color:var(--muted)}
+.py-badge{font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.py-body{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);line-height:1.75}
+.py-body.open{display:block}
+.py-arrow{font-size:12px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.py-level.open .py-arrow{transform:rotate(180deg)}
+
+/* Level colors */
+.py-1{background:#f0fdf4}.py-num-1{background:var(--green)}
+.py-badge-1{background:#d1fae5;color:var(--green)}
+.py-2{background:#eff6ff}.py-num-2{background:var(--cyan)}
+.py-badge-2{background:#dbeafe;color:var(--cyan)}
+.py-3{background:#f5f3ff}.py-num-3{background:var(--accent)}
+.py-badge-3{background:#ede9fe;color:var(--accent)}
+.py-4{background:#fdf2f8}.py-num-4{background:var(--pink)}
+.py-badge-4{background:#fce7f3;color:var(--pink)}
+.py-5{background:linear-gradient(135deg,#fdf2f8,#ede9fe)}.py-num-5{background:linear-gradient(135deg,var(--pink),var(--accent))}
+.py-badge-5{background:linear-gradient(135deg,#fce7f3,#ede9fe);color:var(--accent)}
+
+/* ── Code block ── */
+.cb{background:#1a1a2e;border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#93c5fd;position:relative;margin:10px 0;line-height:1.7;overflow-x:auto;white-space:pre}
+.cb .cm{color:#4ade80}.cb .cv{color:#e2e8f0}.cb .cs{color:#fbbf24}.cb .cd{color:#9ca3af}
+.cp{position:absolute;top:10px;right:10px;padding:4px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:7px;color:rgba(255,255,255,.7);font-size:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.cp:hover{background:rgba(255,255,255,.22)}
+.cp.ok{background:rgba(74,222,128,.25);border-color:rgba(74,222,128,.4);color:#4ade80}
+
+/* ── Tips ── */
+.tip{border-radius:12px;padding:13px 16px;font-size:13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;line-height:1.7}
+.tip-g{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.tip-p{background:#f5f3ff;border:1px solid #ddd6fe;color:#5b21b6}
+.tip-y{background:#fffbeb;border:1px solid #fed7aa;color:#92400e}
+.ti{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* ── Steps ── */
+.steps{list-style:none}
+.step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.step:last-child{border-bottom:none}
+.sn{width:26px;height:26px;border-radius:8px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px}
+.step-desc{font-size:12.5px;color:var(--muted);line-height:1.7}
+
+/* ── Comparison ── */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:520px){.compare{grid-template-columns:1fr}}
+.cmp-bad{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:14px}
+.cmp-good{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px}
+.cmp-label{font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:8px}
+.cmp-bad .cmp-label{color:#991b1b}
+.cmp-good .cmp-label{color:#166534}
+.cmp-text{font-size:12px;font-family:'JetBrains Mono','Fira Code',monospace;line-height:1.6;background:var(--s2);border-radius:8px;padding:8px 10px;word-break:break-all}
+
+/* ── Agent diagram ── */
+.agent-diagram{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:24px;margin:16px 0;text-align:center}
+.ag-row{display:flex;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.ag-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;box-shadow:var(--shadow-sm)}
+.ag-box.main{border-color:var(--accent);color:var(--accent);font-weight:700}
+.ag-box.sub{border-color:var(--cyan);color:var(--cyan);font-size:11px}
+.ag-arrow{color:#a1a1aa;font-size:14px;margin-bottom:8px;display:block}
+.ag-label{font-size:10px;color:var(--muted);margin-top:8px}
+
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--accent);border-radius:12px;color:#fff;text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{opacity:.85}
+.sec-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--s1);border:1px solid var(--border);border-radius:12px;color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-left:10px}
+.sec-cta:hover{border-color:var(--accent);color:var(--accent)}
+
+footer{text-align:center;padding:44px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);background:var(--s1);margin-top:40px}
+footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<nav>
+  <div class="nav-logo">MIXI CG <em>×</em> Claude Code</div>
+  <a class="back-link" href="setup.html">← セットアップガイドに戻る</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge">上級者向け</div>
+    <h1>Claude Code を<br><em>10倍速く</em>使う</h1>
+    <p class="lead">基本のセットアップが終わったら、次はここ。Slash commands・Sub-agents・Hooks を使いこなして、Claude Code の本領を引き出しましょう。</p>
+  </div>
+
+  <!-- ── Pyramid ── -->
+  <div class="section">
+    <div class="sec-label">全体像</div>
+    <h2>効率化の5段階ロードマップ</h2>
+    <p style="margin-bottom:8px">各レベルをクリックすると詳細が表示されます。</p>
+
+    <div class="pyramid">
+
+      <div class="py-level py-1" onclick="togglePy(this)">
+        <div class="py-row">
+          <div class="py-num py-num-1">1</div>
+          <div class="py-label-wrap">
+            <div class="py-label">CLAUDE.md ＋ 良いプロンプト</div>
+            <div class="py-sub">一番 ROI が高い。まずここから。</div>
+          </div>
+          <span class="py-badge py-badge-1">完了済み？</span>
+          <span class="py-arrow">▼</span>
+        </div>
+        <div class="py-body">
+          プロジェクトフォルダに <code>CLAUDE.md</code> を置いて、チームのコンテキストを書く。これだけで毎回の説明が不要になり、返答の質が大幅に向上します。<br><br>
+          <strong>チェック：</strong>プロジェクト名・使用ツール・命名規則・返答スタイルを書けているか？
+          <div style="margin-top:10px"><a href="glossary/claudemd.html" target="_blank" style="color:var(--accent);font-size:12px">→ CLAUDE.md の書き方を詳しく見る</a></div>
+        </div>
+      </div>
+
+      <div class="py-level py-2" onclick="togglePy(this)">
+        <div class="py-row">
+          <div class="py-num py-num-2">2</div>
+          <div class="py-label-wrap">
+            <div class="py-label">Slash commands — プロンプトのテンプレ化</div>
+            <div class="py-sub">よく使う指示を1コマンドで呼び出す。</div>
+          </div>
+          <span class="py-badge py-badge-2">中級</span>
+          <span class="py-arrow">▼</span>
+        </div>
+        <div class="py-body">
+          <code>.claude/commands/</code> フォルダにMarkdownファイルを置くだけ。毎回同じプロンプトを打たなくて済みます。<br><br>
+          <strong>例：</strong><code>/vex</code> で VEX コード生成、<code>/doc</code> でドキュメント作成、<code>/report</code> で週報生成。
+          <div style="margin-top:12px">
+            <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px">例：.claude/commands/vex.md を作成</div>
+            <div class="cb" style="font-size:11px"><span class="cm"># VEX コード生成</span>
+<span class="cv">$ARGUMENTS に書かれた処理をHoudiniのVEXで実装してください。</span>
+<span class="cv">- アトリビュート名はキャメルケース</span>
+<span class="cv">- 各行にコメントを入れること</span>
+<span class="cv">- 使い方の例も添えること</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">→ <code>/vex Pointをランダムに削除する処理</code> で呼び出せる</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="py-level py-3" onclick="togglePy(this)">
+        <div class="py-row">
+          <div class="py-num py-num-3">3</div>
+          <div class="py-label-wrap">
+            <div class="py-label">Hooks — 自動トリガー</div>
+            <div class="py-sub">ファイル保存・コミット前に自動でClaudeが動く。</div>
+          </div>
+          <span class="py-badge py-badge-3">上級</span>
+          <span class="py-arrow">▼</span>
+        </div>
+        <div class="py-body">
+          <code>.claude/settings.json</code> に hooks を設定すると、特定のイベントが起きたとき自動でスクリプトやコマンドを実行できます。<br><br>
+          <div class="compare">
+            <div class="cmp-bad"><div class="cmp-label">❌ Hooksなし</div><div class="cmp-text">ファイルを保存 → 手動でClaudeに「チェックして」と依頼</div></div>
+            <div class="cmp-good"><div class="cmp-label">✅ Hooksあり</div><div class="cmp-text">ファイルを保存 → 自動でClaudeが構文チェック・コメント補完</div></div>
+          </div>
+          <div class="cb" style="font-size:11px"><span class="cm">{</span>
+  <span class="cs">"hooks"</span><span class="cv">: {</span>
+    <span class="cs">"PostToolUse"</span><span class="cv">: [{</span>
+      <span class="cs">"matcher"</span><span class="cv">: </span><span class="cs">"Write"</span><span class="cv">,</span>
+      <span class="cs">"hooks"</span><span class="cv">: [{ </span><span class="cs">"type"</span><span class="cv">: </span><span class="cs">"command"</span><span class="cv">, </span><span class="cs">"command"</span><span class="cv">: </span><span class="cs">"echo '保存しました'"</span><span class="cv"> }]</span>
+    <span class="cv">}]</span>
+  <span class="cv">}</span>
+<span class="cv">}</span></div>
+        </div>
+      </div>
+
+      <div class="py-level py-4" onclick="togglePy(this)">
+        <div class="py-row">
+          <div class="py-num py-num-4">4</div>
+          <div class="py-label-wrap">
+            <div class="py-label">MCP — 外部ツール連携</div>
+            <div class="py-sub">Slack・Notion と Claude をつなぐ。</div>
+          </div>
+          <span class="py-badge py-badge-4">上級</span>
+          <span class="py-arrow">▼</span>
+        </div>
+        <div class="py-body">
+          Slack のチャンネルを読む、Notion のドキュメントに書き込む、Web を検索するなど、Claude の行動範囲を外部ツールまで広げます。<br><br>
+          <a href="integrations.html" style="color:var(--accent);font-size:12px;font-weight:600">→ Slack・Notion の詳細セットアップガイドを見る</a>
+        </div>
+      </div>
+
+      <div class="py-level py-5" onclick="togglePy(this)">
+        <div class="py-row">
+          <div class="py-num py-num-5">5</div>
+          <div class="py-label-wrap">
+            <div class="py-label">Sub-agents — 並列・複雑タスク処理</div>
+            <div class="py-sub">複数のClaudeを同時に動かして大規模タスクをこなす。</div>
+          </div>
+          <span class="py-badge py-badge-5">エキスパート</span>
+          <span class="py-arrow">▼</span>
+        </div>
+        <div class="py-body">
+          Claude Code が必要に応じてサブエージェント（別の Claude インスタンス）を自律的に起動し、並列でタスクを処理します。特別な設定は不要——指示の仕方だけで変わります。<br><br>
+          <div class="agent-diagram">
+            <div class="ag-box main" style="display:inline-block;margin-bottom:8px">🤖 Claude（親エージェント）</div>
+            <span class="ag-arrow">↓ タスクを自動分解・分担</span>
+            <div class="ag-row">
+              <div class="ag-box sub">🔍 ファイルA分析</div>
+              <div class="ag-box sub">⚙️ スクリプト生成</div>
+              <div class="ag-box sub">📝 ドキュメント作成</div>
+            </div>
+            <div class="ag-label">並列処理で大幅に高速化</div>
+          </div>
+          詳しくは下の「Sub-agents の使い方」セクションを参照。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Sub-agents ── -->
+  <div class="section">
+    <div class="sec-label">Deep dive</div>
+    <h2>Sub-agents の使い方</h2>
+    <p>Sub-agents を使うために<strong>特別な設定は不要</strong>です。Claude Code は指示に応じて自動的にサブエージェントを立ち上げます。指示の書き方だけが変わります。</p>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="margin-bottom:14px">自動で Sub-agents が動く指示パターン</h3>
+      <ul class="steps">
+        <li class="step">
+          <div class="sn">①</div>
+          <div>
+            <div class="step-title">大量ファイルの並列分析</div>
+            <div class="step-desc">「このプロジェクトの全 Python ファイルを<strong>それぞれ並列で分析して</strong>、問題点をリストアップして」</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="sn">②</div>
+          <div>
+            <div class="step-title">複数の成果物を同時生成</div>
+            <div class="step-desc">「このHoudiniプロジェクトの技術仕様書・操作マニュアル・引き継ぎドキュメントを<strong>同時に作成して</strong>」</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="sn">③</div>
+          <div>
+            <div class="step-title">複雑なリサーチ＋実装</div>
+            <div class="step-desc">「UE5のNanitaの最適設定を調べながら、同時にこのシーンのLOD設定を見直して」</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="compare">
+      <div class="cmp-bad">
+        <div class="cmp-label">❌ 逐次処理（遅い）</div>
+        <div class="cmp-text">「ファイルAを分析して。終わったらBを、終わったらCを…」</div>
+      </div>
+      <div class="cmp-good">
+        <div class="cmp-label">✅ 並列処理（速い）</div>
+        <div class="cmp-text">「A・B・Cを並列で分析して、結果をまとめてレポートにして」</div>
+      </div>
+    </div>
+
+    <div class="tip tip-p">
+      <span class="ti">💡</span>
+      <div>「並列で」「同時に」「それぞれ」という言葉を含めるだけで、Claude Code は自動的に Sub-agents を活用した処理を選択します。</div>
+    </div>
+  </div>
+
+  <!-- ── Slash Commands Detail ── -->
+  <div class="section">
+    <div class="sec-label">Deep dive</div>
+    <h2>Slash commands のセットアップ</h2>
+    <p>CG映像チーム向けのコマンドをそのまま使えるテンプレートです。</p>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="margin-bottom:14px">ディレクトリ構成</h3>
+      <div class="cb" style="font-size:11.5px"><span class="cv">プロジェクトフォルダ/</span>
+<span class="cv">└── .claude/</span>
+<span class="cv">    ├── CLAUDE.md</span>
+<span class="cv">    └── commands/</span>
+<span class="cv">        ├── </span><span class="cs">vex.md</span><span class="cd">       # /vex → VEXコード生成</span>
+<span class="cv">        ├── </span><span class="cs">doc.md</span><span class="cd">       # /doc → ドキュメント作成</span>
+<span class="cv">        ├── </span><span class="cs">report.md</span><span class="cd">    # /report → 週報生成</span>
+<span class="cv">        └── </span><span class="cs">review.md</span><span class="cd">    # /review → コードレビュー</span></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px">📄 commands/doc.md — ドキュメント自動生成</h3>
+      <div class="cb" style="font-size:11px"><button class="cp" onclick="doCopy(this,'# ドキュメント生成\n\nこのプロジェクトを読んで、以下の形式でドキュメントを作成してください。\n\n## 対象\n$ARGUMENTS（指定がなければフォルダ全体）\n\n## 出力形式\n- 概要（2〜3行）\n- ファイル構成\n- 主要な機能・設定\n- 注意点・既知の問題\n- チームへの引き継ぎメモ\n\n## スタイル\n- 読者はCG制作者（非エンジニア）を想定\n- 専門用語には説明を添えること')">コピー</button><span class="cm"># ドキュメント生成</span>
+
+<span class="cv">このプロジェクトを読んで、以下の形式でドキュメントを作成してください。</span>
+
+<span class="cm">## 対象</span>
+<span class="cv">$ARGUMENTS（指定がなければフォルダ全体）</span>
+
+<span class="cm">## 出力形式</span>
+<span class="cv">- 概要（2〜3行）</span>
+<span class="cv">- ファイル構成</span>
+<span class="cv">- 主要な機能・設定</span>
+<span class="cv">- 注意点・既知の問題</span>
+
+<span class="cm">## スタイル</span>
+<span class="cv">- 読者はCG制作者（非エンジニア）を想定</span>
+<span class="cv">- 専門用語には説明を添えること</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">使い方：<code>/doc このシーンのセットアップ</code></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px">⚡ commands/vex.md — VEXコード生成</h3>
+      <div class="cb" style="font-size:11px"><button class="cp" onclick="doCopy(this,'# VEX コード生成\n\n以下の処理をHoudini VEXで実装してください。\n\n## やりたいこと\n$ARGUMENTS\n\n## 要件\n- Wrangle ノードに貼るだけで動くコード\n- 各行に日本語コメントを入れること\n- アトリビュート名と使い方の説明を冒頭に書くこと\n- 使用例（どのノードに貼るか）を最後に書くこと')">コピー</button><span class="cm"># VEX コード生成</span>
+
+<span class="cv">以下の処理をHoudini VEXで実装してください。</span>
+
+<span class="cm">## やりたいこと</span>
+<span class="cv">$ARGUMENTS</span>
+
+<span class="cm">## 要件</span>
+<span class="cv">- Wrangle ノードに貼るだけで動くコード</span>
+<span class="cv">- 各行に日本語コメントを入れること</span>
+<span class="cv">- アトリビュート名と使い方を冒頭に書くこと</span>
+<span class="cv">- 使用例（どのノードに貼るか）を最後に書くこと</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">使い方：<code>/vex Pointをheightに応じてRGB着色する</code></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px">📊 commands/report.md — 週報自動生成</h3>
+      <div class="cb" style="font-size:11px"><button class="cp" onclick="doCopy(this,'# 週報生成\n\nこのフォルダの作業ログ・メモ・コミット履歴を読んで、週報を作成してください。\n\n## 出力形式\n**今週の成果**\n- （箇条書き3〜5点）\n\n**来週の予定**\n- （箇条書き3〜5点）\n\n**課題・ブロッカー**\n- （あれば記載）\n\n## 注意\n- 技術的すぎる表現はわかりやすく言い換える\n- ディレクターが読むことを想定すること')">コピー</button><span class="cm"># 週報生成</span>
+
+<span class="cv">このフォルダの作業ログ・メモを読んで、週報を作成してください。</span>
+
+<span class="cm">## 出力形式</span>
+<span class="cs">**今週の成果**</span>
+<span class="cv">- （箇条書き3〜5点）</span>
+
+<span class="cs">**来週の予定**</span>
+<span class="cv">- （箇条書き3〜5点）</span>
+
+<span class="cs">**課題・ブロッカー**</span>
+<span class="cv">- （あれば記載）</span>
+
+<span class="cm">## 注意</span>
+<span class="cv">- ディレクターが読むことを想定すること</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">使い方：<code>/report</code>（引数なしでOK）</div>
+    </div>
+
+    <div class="tip tip-g">
+      <span class="ti">✅</span>
+      <div>コマンドファイルは普通のテキストファイルです。メモ帳でも編集できます。<code>$ARGUMENTS</code> が、コマンド実行時に打った追加テキストに置き換わります。</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px">
+    <a class="back-cta" href="setup.html">← セットアップガイドに戻る</a>
+    <a class="sec-cta" href="integrations.html">🔗 社内ツール連携も設定する</a>
+  </div>
+
+</div>
+
+<footer>
+  MIXI CG映像チーム × Claude Code &nbsp;|&nbsp;
+  <a href="setup.html">セットアップガイド</a> &nbsp;|&nbsp;
+  <a href="integrations.html">社内連携</a> &nbsp;|&nbsp;
+  <a href="discovery.html">機能一覧</a>
+</footer>
+
+<script>
+const prog = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  prog.style.width = Math.min(window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100, 100) + '%';
+}, { passive: true });
+
+function togglePy(el) {
+  const body = el.querySelector('.py-body');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.py-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.py-level').forEach(l => l.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); el.classList.add('open'); }
+}
+
+function doCopy(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent; btn.textContent = '✓ コピー済'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
