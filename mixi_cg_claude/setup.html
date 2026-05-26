@@ -155,6 +155,7 @@ footer a{color:var(--accent);text-decoration:none}
   <div class="nav-logo">MIXI CG <em>×</em> Claude Code</div>
   <div class="nav-pills">
     <a class="np" href="#install">インストール</a>
+    <a class="np" href="#hacks">快適化設定</a>
     <a class="np" href="#first">初回だけ</a>
     <a class="np" href="#daily">毎日使う</a>
     <a class="np" href="#role">役割別</a>
@@ -233,6 +234,68 @@ footer a{color:var(--accent);text-decoration:none}
 
 <div class="div"></div>
 
+<!-- ════ HACKS ════ -->
+<section id="hacks">
+  <div class="sec-tag rv">快適化設定</div>
+  <h2 class="rv">2行で劇的に<br>使いやすくなる設定</h2>
+  <p class="lead rv d1">ターミナルにコピペするだけ。コード探索が爆速になり、長いセッションでコンテキストが詰まる問題も解消されます。</p>
+
+  <!-- LSP -->
+  <div class="pc rv d2">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">⚡</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-once">1回設定するだけ</span><span class="tag tag-tool">ターミナル設定</span></div>
+        <div class="pc-title">LSP ツールを有効化 — コード探索を爆速にする</div>
+        <div class="pc-what">通常のgrep検索で30〜60秒かかるコード探索が、約50msに短縮。スクリプトが多いプロジェクトほど効果大</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">Claude がコードの構造を理解した状態で探索できるようになる。「この関数どこで定義されてる？」に一瞬で答えられる</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.04em">🪟 Windows（コマンドプロンプトまたはPowerShell）</div>
+        <div class="install-cmd"><span style="font-size:10.5px">setx ENABLE_LSP_TOOL 1</span><button onclick="doCopy(this,'setx ENABLE_LSP_TOOL 1')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.04em">🍎 Mac（ターミナル）</div>
+        <div class="install-cmd"><span style="font-size:10.5px">echo 'export ENABLE_LSP_TOOL=1' >> ~/.zshrc && source ~/.zshrc</span><button onclick="doCopy(this,`echo 'export ENABLE_LSP_TOOL=1' >> ~/.zshrc && source ~/.zshrc`)" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+      </div>
+      <div class="pc-tip">設定後はターミナルを再起動（Windows は再起動後に有効）。Claude Code を再度起動すると反映されます。</div>
+    </div>
+  </div>
+
+  <!-- Auto-compact -->
+  <div class="pc rv d3">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">🧹</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-once">1回設定するだけ</span><span class="tag tag-tool">ターミナル設定</span></div>
+        <div class="pc-title">自動コンパクト 70% 設定 — 長い会話でも詰まらない</div>
+        <div class="pc-what">コンテキスト使用率が70%で自動整理。「/compact が使えない」問題を防ぐ</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">大量のファイル編集・長い会話でも文脈が溢れない。手動で /compact を打つ必要がなくなる</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.04em">🪟 Windows（コマンドプロンプトまたはPowerShell）</div>
+        <div class="install-cmd"><span style="font-size:10.5px">setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70</span><button onclick="doCopy(this,'setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.04em">🍎 Mac（ターミナル）</div>
+        <div class="install-cmd"><span style="font-size:10.5px">echo 'export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70' >> ~/.zshrc && source ~/.zshrc</span><button onclick="doCopy(this,`echo 'export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70' >> ~/.zshrc && source ~/.zshrc`)" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+      </div>
+      <div class="pc-tip">デフォルトは95%です。70%にしておくと余裕を持って自動整理してくれます。</div>
+    </div>
+  </div>
+
+  <div class="tip tip-p rv d4">
+    <span>💡</span>
+    <div>2つまとめて設定したい場合は、ターミナルで <code>setx ENABLE_LSP_TOOL 1</code> → <code>setx CLAUDE_AUTOCOMPACT_PCT_OVERRIDE 70</code> を順番に実行するだけです。</div>
+  </div>
+</section>
+
+<div class="div"></div>
+
 <!-- ════ FIRST — 初回だけ ════ -->
 <section id="first">
   <div class="sec-tag rv">初回だけ実行する</div>
@@ -306,6 +369,60 @@ footer a{color:var(--accent);text-decoration:none}
         </div>
       </div>
       <div class="pc-tip">このプロンプトは作業フォルダで Claude を起動してから使ってください。そのフォルダに CLAUDE.md が作られます。</div>
+    </div>
+  </div>
+
+  <!-- Prompt 3: AI専門家チーム -->
+  <div class="pc rv d4">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">🧠</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-once">初回1回だけ</span><span class="tag tag-tool">CLAUDE.md</span></div>
+        <div class="pc-title">AI専門家チームを CLAUDE.md に設定する</div>
+        <div class="pc-what">作業の種類に応じて Claude が自動で専門家の視点に切り替わるよう CLAUDE.md に定義</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">VEX/スクリプト → Houdini TD の思考モード ／ ルック開発 → アートディレクター視点 ／ 週報・議事録 → プロデューサー視点 で自動回答してくれる</div>
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="p3ai" readonly rows="26">~/.claude/CLAUDE.md に「AI専門家チーム」セクションを追加してください。
+
+まず現在の ~/.claude/CLAUDE.md を読んでください。
+次に以下のセクションを追加して保存してください：
+
+---
+## タスク別専門家モード
+
+以下の種類の作業をするとき、それぞれの専門家の視点で考えて答えてください：
+
+**① VEX・Python・スクリプト・Pipeline 系**
+→ ベテラン Houdini TD / Pipeline Engineer として対応
+→ パフォーマンス・再利用性・アーティストが使いやすい設計を優先
+→ エラーは「原因・修正コード・同じミスを防ぐポイント」の3段階で説明
+
+**② ビジュアル開発・ルック開発・デザイン確認**
+→ 経験豊富な CG アートディレクターとして対応
+→ ビジュアルの意図・トーン・ターゲット視聴者を常に意識した提案をする
+→ フィードバックは「良い点＋具体的な改善案」をセットで出す
+
+**③ プロジェクト管理・週報・議事録・ドキュメント化**
+→ CG映像制作のプロデューサーとして対応
+→ 伝わりやすさと簡潔さを最優先、技術用語は噛み砕いて説明
+→ アクションアイテムは「担当者・期日・優先度」を必ず明示
+
+**④ 技術調査・新機能キャッチアップ・ツール評価**
+→ R&D 担当エンジニアとして対応
+→ 公式ドキュメント・実装難易度・現場での実用性の3軸で評価
+→「今すぐ使えるか」「将来的に使えるか」を必ず判断して提示
+---
+
+追加後、どのモードが設定されたか確認のため一覧を表示してください。</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'p3ai')">📋 コピーして Claude に貼り付ける</button>
+          <button class="expand-btn" onclick="expandText('p3ai')">全文表示</button>
+        </div>
+      </div>
+      <div class="pc-tip">設定すると「VEXのエラー直して」→ TDモード、「週報作って」→ プロデューサーモード と、Claude が文脈を読んで自動で切り替えます。CLAUDE.md の更新なので、次のセッションから有効です。</div>
     </div>
   </div>
 
