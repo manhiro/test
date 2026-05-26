@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCPとは？ — Claude Code 用語集</title>
+<style>
+:root{--bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;--text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;--green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:36px;transition:color .2s}
+.back:hover{color:var(--accent2)}
+.tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--cyan);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(26px,5vw,40px);font-weight:900;line-height:1.15;margin-bottom:10px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--cyan),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:14px;color:var(--muted);margin-bottom:36px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+h2{font-size:16px;font-weight:700;margin-bottom:10px}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+.analogy{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.2);border-radius:14px;padding:20px;margin-bottom:16px}
+.analogy-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--cyan);margin-bottom:10px;text-transform:uppercase}
+.analogy-body{font-size:13.5px;color:var(--text);line-height:1.8}
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+.mcp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.mcp-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px}
+.mcp-icon{font-size:22px;margin-bottom:6px}
+.mcp-name{font-size:12px;font-weight:700;margin-bottom:4px}
+.mcp-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.tip{border-radius:12px;padding:14px 16px;font-size:12.5px;display:flex;gap:10px;margin-bottom:14px;line-height:1.65}
+.tip-c{background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.22);color:#a5f3fc}
+.tip-p{background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.22);color:#c4b5fd}
+.tip-g{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);color:#86efac}
+.level{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3);margin-bottom:12px}
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.4);border-radius:14px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{background:rgba(124,106,247,.25)}
+.diagram{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;background:var(--s2);border-radius:14px;margin-bottom:16px;flex-wrap:wrap}
+.diag-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;text-align:center;min-width:90px}
+.diag-arrow{color:var(--muted);font-size:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../setup.html">← セットアップガイドに戻る</a>
+
+  <div class="tag">用語解説</div>
+  <div class="level">上級者向け</div>
+  <h1><em>MCP</em> とは？</h1>
+  <div class="sub">Model Context Protocol — Claude Code を外部ツールと繋ぐ「プラグイン」</div>
+
+  <div class="analogy">
+    <div class="analogy-label">💡 たとえるなら</div>
+    <div class="analogy-body">
+      Blender のアドオンと同じです。<br>
+      標準の Blender に「アドオンを追加」すると新しい機能が使えるように、<br>
+      <strong>Claude Code に MCP サーバーを追加</strong>すると、Slack・データベース・ファイルサーバーなど外部ツールと連携できるようになります。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>MCP でできること（例）</h2>
+    <div class="mcp-grid">
+      <div class="mcp-card">
+        <div class="mcp-icon">💬</div>
+        <div class="mcp-name">Slack 連携</div>
+        <div class="mcp-desc">「#制作チャンネルの最新メッセージをまとめて」と Claude に依頼できる</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-icon">🗄️</div>
+        <div class="mcp-name">データベース接続</div>
+        <div class="mcp-desc">プロジェクト管理DBを直接読んでレポートを生成</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-icon">🌐</div>
+        <div class="mcp-name">Web 検索</div>
+        <div class="mcp-desc">最新の技術情報をリアルタイムで検索して回答</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-icon">📁</div>
+        <div class="mcp-name">クラウドストレージ</div>
+        <div class="mcp-desc">Google Drive や S3 上のファイルを直接読み書き</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-icon">🎨</div>
+        <div class="mcp-name">Figma 連携</div>
+        <div class="mcp-desc">Figma のデザインデータを読み込んでドキュメント化</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-icon">📊</div>
+        <div class="mcp-name">Notion / Linear</div>
+        <div class="mcp-desc">タスク・ドキュメント管理ツールと双方向連携</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>どうやって動く？</h2>
+    <div class="diagram">
+      <div class="diag-box">👤<br>あなた<br><span style="font-size:10px;color:var(--muted)">日本語で指示</span></div>
+      <div class="diag-arrow">⇄</div>
+      <div class="diag-box" style="border-color:rgba(124,106,247,.5)">🤖<br>Claude Code<br><span style="font-size:10px;color:var(--muted)">判断・処理</span></div>
+      <div class="diag-arrow">⇄</div>
+      <div class="diag-box" style="border-color:rgba(34,211,238,.5)">🔌<br>MCP サーバー<br><span style="font-size:10px;color:var(--muted)">外部ツール</span></div>
+    </div>
+    <p>Claude Code が必要に応じて MCP サーバー経由で外部ツールにアクセスします。あなたは普通に日本語で指示するだけです。</p>
+  </div>
+
+  <div class="tip tip-p">
+    <span>📌</span>
+    <div>MCP の設定には JSON ファイルの編集が必要です。まずは基本の Claude Code に慣れてから挑戦しましょう。<br>詳細は <code>discovery.html</code> の「MCP」カテゴリを参照してください。</div>
+  </div>
+
+  <div class="tip tip-g">
+    <span>✅</span>
+    <div><strong>最初のうちは MCP なしで十分</strong>です。テキストでの会話・ファイル読み書き・スクリプト生成だけで、日常業務の大半はカバーできます。</div>
+  </div>
+
+  <a class="back-cta" href="../setup.html">← セットアップに戻って続ける</a>
+
+</div>
+</body>
+</html>

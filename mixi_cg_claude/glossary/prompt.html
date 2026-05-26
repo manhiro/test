@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プロンプトとは？ — Claude Code 用語集</title>
+<style>
+:root{--bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;--text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;--green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:36px;transition:color .2s}
+.back:hover{color:var(--accent2)}
+.tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25);color:var(--pink);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(26px,5vw,40px);font-weight:900;line-height:1.15;margin-bottom:10px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--pink),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:14px;color:var(--muted);margin-bottom:36px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+h2{font-size:16px;font-weight:700;margin-bottom:12px}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+.analogy{background:rgba(244,114,182,.06);border:1px solid rgba(244,114,182,.2);border-radius:14px;padding:20px;margin-bottom:16px}
+.analogy-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--pink);margin-bottom:10px;text-transform:uppercase}
+.analogy-body{font-size:13.5px;color:var(--text);line-height:1.8}
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:500px){.compare{grid-template-columns:1fr}}
+.cmp{border-radius:12px;padding:14px}
+.cmp-bad{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2)}
+.cmp-good{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2)}
+.cmp-label{font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:8px}
+.cmp-bad .cmp-label{color:#f87171}
+.cmp-good .cmp-label{color:var(--green)}
+.cmp-text{font-size:12px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:8px;padding:10px 12px;font-family:'JetBrains Mono','Fira Code',monospace}
+.cmp-why{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+.tip{border-radius:12px;padding:14px 16px;font-size:12.5px;display:flex;gap:10px;margin-bottom:14px;line-height:1.65}
+.tip-p{background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.22);color:#fbb6ce}
+.tip-g{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);color:#86efac}
+.tip-b{background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.22);color:#c4b5fd}
+.formula{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.formula-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.formula-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:13px}
+.formula-row:last-child{margin-bottom:0}
+.f-tag{min-width:80px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;text-align:center;flex-shrink:0}
+.f-what{background:rgba(124,106,247,.15);color:var(--accent2)}
+.f-ctx{background:rgba(34,211,238,.15);color:var(--cyan)}
+.f-out{background:rgba(74,222,128,.15);color:var(--green)}
+.f-style{background:rgba(244,114,182,.15);color:var(--pink)}
+.f-text{color:var(--muted);line-height:1.65}
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.4);border-radius:14px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{background:rgba(124,106,247,.25)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../setup.html">← セットアップガイドに戻る</a>
+
+  <div class="tag">用語解説</div>
+  <h1><em>プロンプト</em>とは？</h1>
+  <div class="sub">AI への指示文——うまく伝えるほど、返答の質が上がる</div>
+
+  <div class="analogy">
+    <div class="analogy-label">💡 たとえるなら</div>
+    <div class="analogy-body">
+      優秀なフリーランサーへの<strong>ブリーフィング</strong>です。<br><br>
+      「いい感じにして」では伝わりません。<br>
+      「対象は20代向け、トーンはクール、参考はこのリファレンス」のように<br>
+      <strong>背景・目的・条件・形式を揃えるほど、期待通りの結果が返ってきます。</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>良いプロンプト・悪いプロンプト</h2>
+
+    <div class="compare">
+      <div class="cmp cmp-bad">
+        <div class="cmp-label">❌ 伝わりにくい</div>
+        <div class="cmp-text">スクリプトを修正して</div>
+        <div class="cmp-why">何のスクリプト？何を修正？どう直す？情報が足りない。</div>
+      </div>
+      <div class="cmp cmp-good">
+        <div class="cmp-label">✅ 伝わりやすい</div>
+        <div class="cmp-text">このHoudini PythonスクリプトはFBXをエクスポートするものですが、出力先のパスをハードコードせず変数で指定できるように修正してください</div>
+        <div class="cmp-why">対象・現状・目的が揃っている。</div>
+      </div>
+    </div>
+
+    <div class="compare">
+      <div class="cmp cmp-bad">
+        <div class="cmp-label">❌ 伝わりにくい</div>
+        <div class="cmp-text">VEXを書いて</div>
+        <div class="cmp-why">何をしたいVEX？アトリビュート名は？条件は？</div>
+      </div>
+      <div class="cmp cmp-good">
+        <div class="cmp-label">✅ 伝わりやすい</div>
+        <div class="cmp-text">HoudiniでPointの@Cdを、@heightアトリビュートの値に応じて青→赤のグラデーションで塗るVEXを書いて。heightの範囲は0〜10</div>
+        <div class="cmp-why">ツール名・目的・変数名・範囲が明確。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>良いプロンプトの公式</h2>
+    <div class="formula">
+      <div class="formula-label">4つの要素を揃えるだけ</div>
+      <div class="formula-row">
+        <span class="f-tag f-what">何をして</span>
+        <span class="f-text">「FBXをエクスポートするスクリプトを<strong>書いて</strong>」</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-tag f-ctx">背景・条件</span>
+        <span class="f-text">「Houdini 20.5 で使う。対象は選択中のメッシュのみ」</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-tag f-out">出力形式</span>
+        <span class="f-text">「Python スクリプトとして、使い方のコメント付きで」</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-tag f-style">スタイル</span>
+        <span class="f-text">「初心者でも読めるようにシンプルに書いて」</span>
+      </div>
+    </div>
+    <p>すべてを毎回書く必要はありません。伝わりにくいと感じたら要素を足してみてください。</p>
+  </div>
+
+  <div class="card">
+    <h2>会話を続けて精度を上げる</h2>
+    <p>プロンプトは一回で完成させなくていいです。会話しながら少しずつ調整できます。</p>
+    <div style="background:var(--s2);border-radius:12px;padding:16px;font-size:12.5px;line-height:1.8">
+      <div style="color:var(--text)"><span style="color:var(--muted)">You  › </span>このフォルダのPythonファイルを全部読んで概要を教えて</div>
+      <div style="color:#86efac;margin:6px 0"><span style="color:var(--muted)">Claude › </span>（概要を説明）</div>
+      <div style="color:var(--text)"><span style="color:var(--muted)">You  › </span>もう少し短くまとめて。箇条書きで3点に絞って</div>
+      <div style="color:#86efac;margin:6px 0"><span style="color:var(--muted)">Claude › </span>（修正版を出力）</div>
+      <div style="color:var(--text)"><span style="color:var(--muted)">You  › </span>OK。これをチーム向けのSlackメッセージ形式に変えて</div>
+    </div>
+  </div>
+
+  <div class="tip tip-b">
+    <span>💡</span>
+    <div><strong>日本語で OK</strong> です。英語のほうが精度が高いと言われることもありますが、Claude は日本語でも十分高品質な返答をします。まず日本語で試してみてください。</div>
+  </div>
+
+  <div class="tip tip-g">
+    <span>✅</span>
+    <div>迷ったら「<strong>〇〇してほしいのですが、どんな情報があれば答えられますか？</strong>」と逆に聞いてみましょう。Claude が必要な情報を教えてくれます。</div>
+  </div>
+
+  <a class="back-cta" href="../setup.html">← セットアップに戻って続ける</a>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code はじめかた — MIXI CG映像チーム</title>
+<style>
+:root{
+  --bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;
+  --text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;
+  --green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;--yellow:#fde047;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;overflow-x:hidden;line-height:1.7}
+
+/* ── Progress bar ── */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--cyan),var(--pink));z-index:400;width:0%;transition:width .06s linear;box-shadow:0 0 10px rgba(124,106,247,.7)}
+
+/* ── Nav ── */
+nav{position:fixed;top:3px;left:0;right:0;z-index:300;background:rgba(12,12,16,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px}
+.nav-logo{font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap;color:var(--text)}
+.nav-logo em{color:var(--accent);font-style:normal}
+.nav-steps{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;flex:1}
+.nav-steps::-webkit-scrollbar{display:none}
+.ns{padding:3px 10px;border-radius:12px;border:1px solid transparent;color:var(--muted);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .2s;text-decoration:none}
+.ns:hover,.ns.active{background:rgba(124,106,247,.15);border-color:rgba(124,106,247,.4);color:var(--accent2)}
+.nav-disc{margin-left:auto;padding:5px 14px;background:var(--accent);border-radius:12px;color:#fff;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:opacity .2s;flex-shrink:0}
+.nav-disc:hover{opacity:.8}
+
+/* ── Layout ── */
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+section{padding:110px 20px 70px;max-width:880px;margin:0 auto}
+
+/* ── Reveal ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.shown{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.18s}.d3{transition-delay:.28s}
+.d4{transition-delay:.38s}.d5{transition-delay:.48s}
+
+/* ── Typography ── */
+.ch-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ch-label::before{content:'';width:20px;height:2px;background:var(--accent);display:inline-block}
+h1{font-size:clamp(30px,6vw,56px);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:18px}
+h2{font-size:clamp(24px,4vw,40px);font-weight:800;line-height:1.2;margin-bottom:14px}
+h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.lead{font-size:clamp(13px,1.8vw,16px);color:var(--muted);line-height:1.8;margin-bottom:28px;max-width:620px}
+.grad{background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad-p{background:linear-gradient(135deg,var(--pink),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── Glossary term link ── */
+.term{display:inline-flex;align-items:center;gap:3px;color:var(--cyan);text-decoration:none;border-bottom:1px dashed rgba(34,211,238,.4);padding-bottom:1px;transition:border-color .2s;font-size:.95em}
+.term:hover{border-color:var(--cyan)}
+.term sup{font-size:9px;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.35);border-radius:3px;padding:0 4px;margin-left:2px;color:var(--cyan);font-style:normal;vertical-align:super;line-height:1.6}
+
+/* ── Inline code ── */
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+
+/* ── Divider ── */
+.div{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);max-width:880px;margin:0 auto}
+
+/* ── Step card ── */
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:26px;margin-bottom:16px;position:relative;transition:border-color .3s}
+.sc:hover{border-color:rgba(124,106,247,.35)}
+.sc-num{position:absolute;top:-13px;left:22px;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px;letter-spacing:.06em;background:var(--accent);color:#fff}
+
+/* ── OS Toggle ── */
+.os-row{display:flex;gap:6px;margin-bottom:18px}
+.os-btn{padding:5px 16px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:inherit}
+.os-btn.on{background:rgba(124,106,247,.15);border-color:rgba(124,106,247,.5);color:var(--accent2)}
+
+/* ── Code block ── */
+.cb{background:#070710;border:1px solid var(--border);border-radius:12px;padding:14px 16px 14px 14px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#93c5fd;position:relative;overflow-x:auto;margin-bottom:12px;line-height:1.65}
+.cb .pr{color:var(--muted);user-select:none;margin-right:4px}
+.cp{position:absolute;top:10px;right:10px;padding:4px 10px;background:rgba(124,106,247,.18);border:1px solid rgba(124,106,247,.3);border-radius:8px;color:var(--accent2);font-size:10px;cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap}
+.cp:hover{background:rgba(124,106,247,.32)}
+.cp.ok{background:rgba(74,222,128,.18);border-color:rgba(74,222,128,.3);color:var(--green)}
+.os-win{display:block}.os-mac{display:none}
+body.is-mac .os-win{display:none}body.is-mac .os-mac{display:block}
+
+/* ── Alert boxes ── */
+.tip{background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.22);border-radius:12px;padding:13px 16px;font-size:12.5px;color:#c4b5fd;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;line-height:1.65}
+.tip-w{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:#fde68a}
+.tip-g{background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.22);color:#86efac}
+.ti{font-size:15px;flex-shrink:0;line-height:1.5}
+
+/* ── Role tabs ── */
+.role-tabs{display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap}
+.rb{padding:9px 22px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;transition:all .22s;font-family:inherit;font-weight:600}
+.rb[data-r="designer"].on{background:rgba(244,114,182,.12);border-color:var(--pink);color:var(--pink)}
+.rb[data-r="director"].on{background:rgba(34,211,238,.12);border-color:var(--cyan);color:var(--cyan)}
+.rb[data-r="cg"].on{background:rgba(192,132,252,.12);border-color:#c084fc;color:#c084fc}
+.rc{display:none}.rc.on{display:block}
+
+/* ── Card grid ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:16px}
+.gc{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .2s}
+.gc:hover{border-color:rgba(124,106,247,.35)}
+.gc-icon{font-size:26px;margin-bottom:10px}
+.gc-title{font-size:13px;font-weight:700;margin-bottom:6px}
+.gc-desc{font-size:11.5px;color:var(--muted);line-height:1.65}
+.gc-prompt{font-size:10.5px;font-family:'JetBrains Mono','Fira Code',monospace;color:#93c5fd;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-top:10px;line-height:1.55;word-break:break-all}
+
+/* ── Floating chips (hero) ── */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;animation:fl 3s ease-in-out infinite}
+.chip:nth-child(2n){animation-delay:.4s}.chip:nth-child(3n){animation-delay:.8s}.chip:nth-child(4n){animation-delay:1.2s}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* ── CTA buttons ── */
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:linear-gradient(135deg,var(--accent),#5b4fcf);border-radius:20px;color:#fff;font-size:14px;font-weight:700;text-decoration:none;transition:all .3s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,106,247,.4)}
+.btn-s{display:inline-flex;align-items:center;gap:6px;padding:13px 22px;background:transparent;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;transition:all .2s}
+.btn-s:hover{border-color:var(--accent);color:var(--accent2)}
+
+/* ── Scroll hint ── */
+.scroll-hint{display:flex;flex-direction:column;align-items:flex-start;gap:4px;color:var(--muted);font-size:11px;margin-top:36px;animation:bo 2.2s ease-in-out infinite}
+@keyframes bo{0%,100%{transform:translateY(0)}55%{transform:translateY(6px)}}
+
+/* ── Checklist ── */
+.cl{list-style:none}
+.cl li{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
+.cl li:last-child{border-bottom:none}
+.ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ck.done{background:var(--green);border-color:var(--green);color:#0c0c10}
+
+/* ── Next cards ── */
+.next-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:24px}
+.nc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:20px;text-decoration:none;transition:all .22s;display:block}
+.nc:hover{transform:translateY(-3px);border-color:rgba(124,106,247,.5);box-shadow:0 12px 32px rgba(124,106,247,.15)}
+.nc-icon{font-size:28px;margin-bottom:10px}
+.nc-title{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.nc-desc{font-size:11.5px;color:var(--muted);line-height:1.55}
+
+/* ── Table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{padding:11px 16px;text-align:left;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.05em;background:var(--s2)}
+.tbl td{padding:11px 16px}
+.tbl tr{border-top:1px solid var(--border)}
+
+/* ── Hero badge ── */
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.3);color:var(--accent2);margin-bottom:18px;text-transform:uppercase}
+
+/* ── Auth cards ── */
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:500px){.auth-grid{grid-template-columns:1fr}}
+
+/* ── Footer ── */
+footer{text-align:center;padding:44px 20px;color:var(--muted);font-size:11px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:620px){
+  section{padding:90px 16px 50px}
+  .grid{grid-template-columns:1fr}
+  .auth-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<nav>
+  <div class="nav-logo">MIXI CG <em>×</em> Claude Code</div>
+  <div class="nav-steps">
+    <a class="ns" href="#what">01 Claudeとは</a>
+    <a class="ns" href="#setup">02 セットアップ</a>
+    <a class="ns" href="#first">03 最初の一歩</a>
+    <a class="ns" href="#roles">04 役割別ガイド</a>
+    <a class="ns" href="#customize">05 カスタマイズ</a>
+    <a class="ns" href="#next">06 次のステップ</a>
+  </div>
+  <a class="nav-disc" href="discovery.html">機能一覧 →</a>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section id="hero" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center">
+
+  <div class="reveal">
+    <div class="badge">MIXI CG映像チーム向け完全ガイド</div>
+    <h1>Claude Code を<br><span class="grad">はじめよう</span></h1>
+    <p class="lead">コードを書かなくていい。難しくない。<br>このページをスクロールするだけで、10分後には使えるようになります。</p>
+  </div>
+
+  <div class="chips reveal d1">
+    <span class="chip" style="background:rgba(244,114,182,.14);border:1px solid rgba(244,114,182,.3);color:var(--pink)">🎨 デザイナー</span>
+    <span class="chip" style="background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.3);color:var(--cyan)">🎬 ディレクター</span>
+    <span class="chip" style="background:rgba(192,132,252,.14);border:1px solid rgba(192,132,252,.3);color:#c084fc">✨ CGアーティスト</span>
+    <span class="chip" style="background:rgba(74,222,128,.14);border:1px solid rgba(74,222,128,.3);color:var(--green)">📁 ファイル整理</span>
+    <span class="chip" style="background:rgba(253,224,71,.14);border:1px solid rgba(253,224,71,.3);color:var(--yellow)">📝 ドキュメント自動化</span>
+    <span class="chip" style="background:rgba(124,106,247,.14);border:1px solid rgba(124,106,247,.3);color:var(--accent2)">⚡ スクリプト生成</span>
+    <span class="chip" style="background:rgba(248,113,113,.14);border:1px solid rgba(248,113,113,.3);color:#f87171">🔧 VEX / Python</span>
+    <span class="chip" style="background:rgba(8,145,178,.14);border:1px solid rgba(8,145,178,.3);color:var(--cyan)">🤖 作業自動化</span>
+  </div>
+
+  <div class="reveal d2" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <a class="btn-p" href="#what">ガイドをはじめる ↓</a>
+    <a class="btn-s" href="discovery.html">機能一覧を先に見る</a>
+  </div>
+
+  <div class="scroll-hint reveal d3">
+    <span>↓ スクロールして学ぶ</span>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 01: WHAT ════ -->
+<section id="what">
+  <div class="ch-label reveal">Section 01</div>
+  <h2 class="reveal">Claude Code って<br>何ができるの？</h2>
+  <p class="lead reveal d1">AIに日本語で話しかけるだけで、面倒な作業を肩代わりしてくれるツールです。<br>プログラミングの知識はいりません。</p>
+
+  <div class="grid reveal d2">
+    <div class="gc">
+      <div class="gc-icon">📁</div>
+      <div class="gc-title">フォルダを丸ごと理解</div>
+      <div class="gc-desc">プロジェクト全体を読んで、何がどこにあるか把握。整理・リネームの提案まで。</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">📝</div>
+      <div class="gc-title">ドキュメントを自動作成</div>
+      <div class="gc-desc">シーン設定・シェーダー仕様・作業ログを、そのまま読みやすい文書に変換。</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">⚙️</div>
+      <div class="gc-title">スクリプトを生成・修正</div>
+      <div class="gc-desc">「こういう処理をしたい」と伝えるだけで VEX・Python・MEL を書いてくれる。</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">🔍</div>
+      <div class="gc-title">技術調査・まとめ</div>
+      <div class="gc-desc">Blender / UE5 の新機能やベストプラクティスを調べ、チーム向けにまとめる。</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">🔁</div>
+      <div class="gc-title">繰り返し作業を自動化</div>
+      <div class="gc-desc">毎週同じ形式のレポート、アセットのチェック作業——一度設定すれば後は任せるだけ。</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">💬</div>
+      <div class="gc-title">会話しながら作業</div>
+      <div class="gc-desc">「もう少しシンプルに」「英語でも書いて」と追加指示も自然な日本語でOK。</div>
+    </div>
+  </div>
+
+  <div class="tip reveal d3" style="margin-top:24px">
+    <span class="ti">💡</span>
+    <div>Claude Code は<a href="glossary/terminal.html" class="term" target="_blank">ターミナル<sup>?</sup></a>（黒い画面）で動きますが、操作は会話形式です。コマンドをほとんど覚える必要はありません。</div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 02: SETUP ════ -->
+<section id="setup">
+  <div class="ch-label reveal">Section 02</div>
+  <h2 class="reveal"><span class="grad">3ステップ</span>で<br>セットアップ完了</h2>
+  <p class="lead reveal d1">Windows でも Mac でも同じ手順です。所要時間：約 10 分。</p>
+
+  <div class="os-row reveal d1">
+    <button class="os-btn on" onclick="setOS('win',this)">🪟 Windows</button>
+    <button class="os-btn" onclick="setOS('mac',this)">🍎 Mac</button>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="sc reveal d2">
+    <div class="sc-num">Step 1 — Node.js をインストール</div>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 14px">Claude Code を動かすために必要なソフトウェアです。<a href="glossary/nodejs.html" class="term" target="_blank">Node.js とは？<sup>?</sup></a></p>
+
+    <div class="tip tip-w" style="margin-bottom:14px">
+      <span class="ti">🌐</span>
+      <div><strong>nodejs.org</strong> にアクセスして <strong>LTS（推奨版）</strong> をダウンロードしてインストールしてください。インストーラーの「次へ」を押し続けるだけでOKです。</div>
+    </div>
+
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">インストール後、ターミナルで確認：</p>
+    <div class="cb">
+      <button class="cp" onclick="doCopy(this,'node --version')">コピー</button>
+      <span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> node --version
+    </div>
+    <div class="tip tip-g">
+      <span class="ti">✅</span>
+      <div><code>v18.x.x</code> 以上が表示されれば成功です。</div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="sc reveal d3">
+    <div class="sc-num">Step 2 — Claude Code をインストール</div>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 14px">ターミナルで以下のコマンドを実行します。コピーボタンを押すとクリップボードに入ります。</p>
+
+    <div class="cb">
+      <button class="cp" onclick="doCopy(this,'npm install -g @anthropic-ai/claude-code')">コピー</button>
+      <span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> npm install -g @anthropic-ai/claude-code
+    </div>
+
+    <div class="tip tip-w">
+      <span class="ti">⚠️</span>
+      <div>エラーが出た場合、会社のプロキシ設定が必要な場合があります。情シスに確認してみてください。</div>
+    </div>
+
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">インストール確認：</p>
+    <div class="cb">
+      <button class="cp" onclick="doCopy(this,'claude --version')">コピー</button>
+      <span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> claude --version
+    </div>
+    <div class="tip tip-g">
+      <span class="ti">✅</span>
+      <div>バージョン番号が表示されれば成功です。</div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="sc reveal">
+    <div class="sc-num">Step 3 — 認証する</div>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 14px">Claude Code を使うには認証が必要です。2 つの方法があります。<a href="glossary/apikey.html" class="term" target="_blank">APIキーとは？<sup>?</sup></a></p>
+
+    <div class="auth-grid">
+      <div style="background:var(--s2);border:2px solid rgba(74,222,128,.32);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:8px">★ おすすめ</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px">claude.ai サブスクリプション</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.65">Pro / Max プランならすぐ使えます。<br>ブラウザでログインするだけ。</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:18px">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:8px">API KEY</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px">API キーで認証</div>
+        <div style="font-size:11.5px;color:var(--muted);line-height:1.65">従量課金型。console.anthropic.com でキーを発行します。</div>
+      </div>
+    </div>
+
+    <p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">起動して認証：</p>
+    <div class="cb">
+      <button class="cp" onclick="doCopy(this,'claude')">コピー</button>
+      <span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> claude
+    </div>
+    <div class="tip tip-g">
+      <span class="ti">✅</span>
+      <div>ブラウザが開いてログイン画面が表示されます。claude.ai のアカウントでログインしてください。完了したらターミナルに戻ると会話が始まります。</div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 03: FIRST PROMPT ════ -->
+<section id="first">
+  <div class="ch-label reveal">Section 03</div>
+  <h2 class="reveal">最初の<span class="grad">プロンプト</span>を<br>入力してみよう</h2>
+  <p class="lead reveal d1"><a href="glossary/prompt.html" class="term" target="_blank">プロンプト<sup>?</sup></a>とは AI への指示文のこと。日本語で自然に話しかけて OK です。</p>
+
+  <div class="sc reveal d2">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">作業したいフォルダに移動して起動：</p>
+
+    <div class="cb os-win">
+      <button class="cp" onclick="doCopy(this,'cd C:\\Users\\YourName\\Documents\\MyProject\nclause')">コピー</button>
+      <span class="pr">PS&gt;</span> cd C:\Users\YourName\Documents\MyProject<br>
+      <span class="pr">PS&gt;</span> claude
+    </div>
+    <div class="cb os-mac">
+      <button class="cp" onclick="doCopy(this,'cd ~/Documents/MyProject\nclaude')">コピー</button>
+      <span class="pr">$</span> cd ~/Documents/MyProject<br>
+      <span class="pr">$</span> claude
+    </div>
+
+    <p style="font-size:12px;color:var(--muted);margin-top:14px;margin-bottom:8px">起動したら日本語で話しかけるだけ：</p>
+    <div class="cb" style="color:var(--text)">
+      <span style="color:var(--muted)">You › </span>このフォルダの構成を説明してください
+    </div>
+    <div class="cb" style="color:#86efac">
+      <span style="color:var(--muted)">Claude › </span>このプロジェクトには以下のファイルが含まれています…<br>
+      <span style="color:var(--muted);margin-left:52px">（フォルダ構成の詳しい説明が表示されます）</span>
+    </div>
+
+    <div class="tip" style="margin-top:14px;margin-bottom:0">
+      <span class="ti">💡</span>
+      <div>終了は <code>/exit</code> と入力するか <strong>Ctrl+C</strong> を押してください。</div>
+    </div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:34px;margin-bottom:14px">コピペで使えるプロンプト例</h3>
+  <div class="grid reveal d1">
+    <div class="gc">
+      <div class="gc-icon">📋</div>
+      <div class="gc-title">フォルダ確認</div>
+      <div class="gc-prompt">このプロジェクトのファイル構成を整理して、何がどこにあるか一覧にしてください</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">✏️</div>
+      <div class="gc-title">引き継ぎ資料作成</div>
+      <div class="gc-prompt">このフォルダの内容をもとに、チーム向けの引き継ぎドキュメントを作成してください</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">🔍</div>
+      <div class="gc-title">コードの解説</div>
+      <div class="gc-prompt">このスクリプトが何をしているか、CG制作者向けにわかりやすく説明してください</div>
+    </div>
+    <div class="gc">
+      <div class="gc-icon">📊</div>
+      <div class="gc-title">作業まとめ</div>
+      <div class="gc-prompt">このフォルダ内のメモを読んで、今週の作業内容をプロジェクト日誌形式でまとめてください</div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 04: ROLES ════ -->
+<section id="roles">
+  <div class="ch-label reveal">Section 04</div>
+  <h2 class="reveal">あなたの<span class="grad-p">役割</span>に合わせた<br>使い方を選ぼう</h2>
+  <p class="lead reveal d1">タブを切り替えて、自分の仕事に直結するプロンプト例を確認してください。</p>
+
+  <div class="role-tabs reveal d2">
+    <button class="rb on" data-r="designer" onclick="setRole('designer')">🎨 デザイナー</button>
+    <button class="rb" data-r="director" onclick="setRole('director')">🎬 ディレクター</button>
+    <button class="rb" data-r="cg" onclick="setRole('cg')">✨ CGアーティスト</button>
+  </div>
+
+  <!-- Designer -->
+  <div class="rc on" id="rc-designer">
+    <div class="grid">
+      <div class="gc"><div class="gc-icon">🖼️</div><div class="gc-title">アセットのリネーム</div><div class="gc-desc">命名規則に沿ったバッチリネームを自動処理。手作業から解放。</div><div class="gc-prompt">img_001〜img_200 を「proj_logo_v001.png」形式にリネームするスクリプトを作って</div></div>
+      <div class="gc"><div class="gc-icon">🎨</div><div class="gc-title">デザイン仕様書の生成</div><div class="gc-desc">使用フォント・カラーパレット・コンポーネント一覧を自動でまとめ。</div><div class="gc-prompt">このCSSから使用カラー・フォントをまとめたデザイン仕様書をMarkdownで作って</div></div>
+      <div class="gc"><div class="gc-icon">🌐</div><div class="gc-title">多言語テキスト対応</div><div class="gc-desc">UIテキストの翻訳・確認・不足分の検出を自動化。</div><div class="gc-prompt">このJSONの日本語テキストを自然な英語に翻訳して。キー名は変えないで</div></div>
+      <div class="gc"><div class="gc-icon">📦</div><div class="gc-title">納品物チェックリスト</div><div class="gc-desc">フォルダ内のファイルと仕様書を照合し、抜け漏れを自動検出。</div><div class="gc-prompt">納品仕様書と現在のフォルダ内容を比較して、不足ファイルをリストアップして</div></div>
+      <div class="gc"><div class="gc-icon">🔄</div><div class="gc-title">フォーマット一括変換</div><div class="gc-desc">SVGのpx→pt変換、カラーコードのHEX→RGBA一括変換など。</div><div class="gc-prompt">このSVGの全カラーコードをHEXからRGBAに変換して、透明度は1.0で</div></div>
+      <div class="gc"><div class="gc-icon">📐</div><div class="gc-title">スタイルガイド整備</div><div class="gc-desc">散在するデザインルールを読み込んで、統一ガイドラインに整理。</div><div class="gc-prompt">複数のデザインメモを読んで、統一されたスタイルガイドのMarkdownを作成して</div></div>
+    </div>
+  </div>
+
+  <!-- Director -->
+  <div class="rc" id="rc-director">
+    <div class="grid">
+      <div class="gc"><div class="gc-icon">📋</div><div class="gc-title">議事録・会議メモ整理</div><div class="gc-desc">雑然としたメモを、決定事項・TODO・懸案に自動分類。</div><div class="gc-prompt">この会議メモを読んで、決定事項・アクションアイテム・未解決課題に分類して整理して</div></div>
+      <div class="gc"><div class="gc-icon">📅</div><div class="gc-title">スケジュール・進行管理</div><div class="gc-desc">タスクリストからガントチャートのたたき台を生成。</div><div class="gc-prompt">このタスク一覧から、Excelで使えるガントチャートのCSVを作って。締め切りは来月末</div></div>
+      <div class="gc"><div class="gc-icon">📝</div><div class="gc-title">仕様書・提案書の草案</div><div class="gc-desc">アイデアメモから、クライアント向け文書を自動ドラフト。</div><div class="gc-prompt">この企画メモをもとに、クライアントに提出できる仕様書のたたき台を作成して</div></div>
+      <div class="gc"><div class="gc-icon">📊</div><div class="gc-title">週次進捗レポート</div><div class="gc-desc">各メンバーの日報をまとめ、週次レポートを自動生成。</div><div class="gc-prompt">このフォルダの日報ファイルを読んで、今週の進捗サマリーレポートを作成して</div></div>
+      <div class="gc"><div class="gc-icon">🔍</div><div class="gc-title">技術調査・まとめ</div><div class="gc-desc">新技術・競合事例・業界トレンドをリサーチしてチーム向けにまとめ。</div><div class="gc-prompt">UE5.4 で追加されたCG映像に使える新機能をリストアップして、実務活用例も添えて</div></div>
+      <div class="gc"><div class="gc-icon">🗂️</div><div class="gc-title">ナレッジベース構築</div><div class="gc-desc">散在するノウハウ・メモを整理し、チームwikiに変換。</div><div class="gc-prompt">このフォルダのメモや設定ファイルを読んで、新メンバー向けオンボーディングドキュメントを作って</div></div>
+    </div>
+  </div>
+
+  <!-- CG Artist -->
+  <div class="rc" id="rc-cg">
+    <div class="grid">
+      <div class="gc"><div class="gc-icon">⚡</div><div class="gc-title">VEXコード生成・修正</div><div class="gc-desc">Houdiniでやりたい処理を説明するだけでVEXを書いてくれる。エラーの原因も解説。</div><div class="gc-prompt">HoudiniでPointをランダムに削除するVEXを書いて。削除率は@densityアトリビュートで制御したい</div></div>
+      <div class="gc"><div class="gc-icon">🐍</div><div class="gc-title">Blender Pythonスクリプト</div><div class="gc-desc">バッチ処理・アドオン・自動化スクリプトを会話形式で生成・デバッグ。</div><div class="gc-prompt">選択中のメッシュをApply ScaleしてからFBXでエクスポートするBlender Pythonを書いて</div></div>
+      <div class="gc"><div class="gc-icon">🎮</div><div class="gc-title">UE5 Blueprintサポート</div><div class="gc-desc">Blueprint設計の相談、ノードの意味の解説、最適化のアドバイス。</div><div class="gc-prompt">UE5でキャラクターが特定メッシュに近づいたらマテリアルを変えるBlueprintの設計を教えて</div></div>
+      <div class="gc"><div class="gc-icon">🔧</div><div class="gc-title">シェーダー・マテリアル</div><div class="gc-desc">GLSL・HLSL・OSL・マテリアルノード設定をサポート。エラー解読から最適化まで。</div><div class="gc-prompt">HoudiniでガラスっぽいOSLシェーダーを書いて。屈折と反射あり、IORは1.5で</div></div>
+      <div class="gc"><div class="gc-icon">📐</div><div class="gc-title">技術仕様書の作成</div><div class="gc-desc">シーン設定・レンダー設定・パイプライン仕様をわかりやすくドキュメント化。</div><div class="gc-prompt">このHoudiniプロジェクトのファイル構成と主要HDAを読んで、技術仕様書を作成して</div></div>
+      <div class="gc"><div class="gc-icon">🎬</div><div class="gc-title">After Effects スクリプト</div><div class="gc-desc">コンポの一括処理、エクスプレッション生成、レンダーキューの自動化。</div><div class="gc-prompt">After EffectsでコンポジションのFPSを全て24に変更するExtendScriptを書いて</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 05: CUSTOMIZE ════ -->
+<section id="customize">
+  <div class="ch-label reveal">Section 05</div>
+  <h2 class="reveal">もっと使いやすく<br><span class="grad">カスタマイズ</span>する</h2>
+  <p class="lead reveal d1"><a href="glossary/claudemd.html" class="term" target="_blank">CLAUDE.md<sup>?</sup></a> というファイルをプロジェクトフォルダに置くと、Claudeが毎回チームの前提を知った状態でスタートします。</p>
+
+  <div class="sc reveal d2">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">プロジェクトフォルダに <code>CLAUDE.md</code> を作成して書くだけ：</p>
+    <div class="cb" style="color:var(--text);white-space:pre;font-size:11.5px;line-height:1.75"><span style="color:#4ade80"># プロジェクト概要</span>
+MIXI CG映像プロジェクト。Houdini + UE5で制作。
+
+<span style="color:#4ade80"># チーム・ツール</span>
+制作: 3名（CG×2、ディレクター×1）
+使用ツール: Houdini 20.5 / UE5.4 / After Effects 2024
+
+<span style="color:#4ade80"># ファイル命名規則</span>
+assets/textures/[asset]_[type]_v001.png
+
+<span style="color:#4ade80"># 返答スタイル</span>
+- 専門用語は日本語で説明を添えること
+- コードには必ず使い方のコメントを入れること</div>
+    <div class="tip" style="margin-bottom:0">
+      <span class="ti">💡</span>
+      <div>このファイルがあるフォルダで <code>claude</code> を起動すると、毎回この内容を読んでから会話が始まります。いちいち前提を説明する手間がなくなります。</div>
+    </div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:34px;margin-bottom:14px">よく使うコマンド一覧</h3>
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden" class="reveal d1">
+    <table class="tbl">
+      <thead><tr><th>コマンド</th><th>説明</th></tr></thead>
+      <tbody>
+        <tr><td><code>/help</code></td><td style="color:var(--muted)">使えるコマンドの一覧を表示</td></tr>
+        <tr><td><code>/clear</code></td><td style="color:var(--muted)">会話履歴をクリアして新しいセッションを開始</td></tr>
+        <tr><td><code>/exit</code></td><td style="color:var(--muted)">Claude Code を終了</td></tr>
+        <tr><td><code>Ctrl + C</code></td><td style="color:var(--muted)">現在の処理を中断</td></tr>
+        <tr><td><code>↑ キー</code></td><td style="color:var(--muted)">前に入力したプロンプトを呼び出す</td></tr>
+        <tr><td><code>/compact</code></td><td style="color:var(--muted)">長くなった会話を要約して続ける（コスト削減）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip reveal d2" style="margin-top:20px">
+    <span class="ti">🔌</span>
+    <div>さらに高度な連携（Slack・Blender・データベースとの接続）は <a href="glossary/mcp.html" class="term" target="_blank">MCP（Model Context Protocol）<sup>?</sup></a> を使います。まずは基本に慣れてから。</div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- ════ 06: NEXT ════ -->
+<section id="next">
+  <div class="ch-label reveal">Section 06</div>
+  <h2 class="reveal">セットアップ<span class="grad">完了！</span><br>次のステップへ</h2>
+  <p class="lead reveal d1">基本を覚えたら、さらに活用の幅を広げましょう。</p>
+
+  <div class="sc reveal d2">
+    <h3 style="margin-bottom:14px">セットアップチェックリスト</h3>
+    <ul class="cl">
+      <li><div class="ck done">✓</div><div><strong>Node.js</strong> インストール済み（v18 以上）</div></li>
+      <li><div class="ck done">✓</div><div><strong>Claude Code</strong> インストール済み</div></li>
+      <li><div class="ck done">✓</div><div><strong>認証</strong>（ブラウザログイン）完了</div></li>
+      <li><div class="ck"></div><div><strong>CLAUDE.md</strong> をプロジェクトフォルダに作成する</div></li>
+      <li><div class="ck"></div><div>役割別プロンプトを 1 つ試してみる</div></li>
+      <li><div class="ck"></div><div>チームメンバーにこのページをシェアする</div></li>
+    </ul>
+  </div>
+
+  <div class="next-grid reveal d3">
+    <a class="nc" href="discovery.html">
+      <div class="nc-icon">🔭</div>
+      <div class="nc-title">機能を発見する</div>
+      <div class="nc-desc">Claude Code でできることをカテゴリ別にすべて確認できます。</div>
+    </a>
+    <a class="nc" href="prompts/04_制作効率化.md">
+      <div class="nc-icon">⚡</div>
+      <div class="nc-title">CG制作効率化プロンプト</div>
+      <div class="nc-desc">VEX・Python・シェーダー生成に使えるテンプレート集。</div>
+    </a>
+    <a class="nc" href="prompts/01_技術キャッチアップ.md">
+      <div class="nc-icon">📡</div>
+      <div class="nc-title">技術キャッチアップ</div>
+      <div class="nc-desc">Blender / Houdini / UE5 の新機能調査プロンプト集。</div>
+    </a>
+    <a class="nc" href="prompts/03_ナレッジ文書化.md">
+      <div class="nc-icon">📚</div>
+      <div class="nc-title">ナレッジ文書化</div>
+      <div class="nc-desc">属人化防止・マニュアル化テンプレート集。</div>
+    </a>
+    <a class="nc" href="glossary/mcp.html">
+      <div class="nc-icon">🔌</div>
+      <div class="nc-title">MCPとは？（上級者向け）</div>
+      <div class="nc-desc">Slack・Blender などと連携する拡張機能の解説。</div>
+    </a>
+    <a class="nc" href="glossary/claudemd.html">
+      <div class="nc-icon">📄</div>
+      <div class="nc-title">CLAUDE.md の書き方</div>
+      <div class="nc-desc">チーム専用の AI ブリーフィングファイルの詳細ガイド。</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  MIXI CG映像チーム × Claude Code &nbsp;|&nbsp;
+  <a href="discovery.html">機能一覧</a> &nbsp;|&nbsp;
+  <a href="README.md">チームガイド全体</a>
+</footer>
+
+<script>
+// Progress bar
+const prog = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  prog.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
+
+// Reveal on scroll
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('shown'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Nav: highlight active section
+const secs = document.querySelectorAll('section[id]');
+const nls = document.querySelectorAll('.ns');
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      nls.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { threshold: 0.35 });
+secs.forEach(s => secObs.observe(s));
+
+// OS toggle
+function setOS(os, btn) {
+  document.querySelectorAll('.os-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.os-win').forEach(el => el.style.display = os === 'win' ? 'block' : 'none');
+  document.querySelectorAll('.os-mac').forEach(el => el.style.display = os === 'mac' ? 'block' : 'none');
+}
+// Default: show Windows
+document.querySelectorAll('.os-win').forEach(el => el.style.display = 'block');
+document.querySelectorAll('.os-mac').forEach(el => el.style.display = 'none');
+
+// Role tabs
+function setRole(r) {
+  document.querySelectorAll('.rb').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.rc').forEach(c => c.classList.remove('on'));
+  document.querySelector(`.rb[data-r="${r}"]`).classList.add('on');
+  document.getElementById('rc-' + r).classList.add('on');
+}
+
+// Copy to clipboard
+function doCopy(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

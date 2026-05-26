@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APIキーとは？ — Claude Code 用語集</title>
+<style>
+:root{--bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;--text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;--green:#4ade80;--cyan:#22d3ee;--yellow:#fde047;--red:#f87171;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:36px;transition:color .2s}
+.back:hover{color:var(--accent2)}
+.tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(253,224,71,.1);border:1px solid rgba(253,224,71,.25);color:var(--yellow);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(26px,5vw,40px);font-weight:900;line-height:1.15;margin-bottom:10px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--yellow),#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:14px;color:var(--muted);margin-bottom:36px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+h2{font-size:16px;font-weight:700;margin-bottom:10px}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+.analogy{background:rgba(253,224,71,.06);border:1px solid rgba(253,224,71,.2);border-radius:14px;padding:20px;margin-bottom:16px}
+.analogy-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--yellow);margin-bottom:10px;text-transform:uppercase}
+.analogy-body{font-size:13.5px;color:var(--text);line-height:1.8}
+.steps{list-style:none}
+.steps li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;align-items:flex-start;color:var(--muted)}
+.steps li:last-child{border-bottom:none}
+.step-n{width:24px;height:24px;border-radius:50%;background:var(--yellow);color:#0c0c10;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+.key-mock{background:#070710;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#93c5fd;margin:10px 0;display:flex;align-items:center;gap:8px}
+.key-label{font-size:10px;color:var(--muted);margin-right:4px}
+.tip{border-radius:12px;padding:14px 16px;font-size:12.5px;display:flex;gap:10px;margin-bottom:16px;line-height:1.65}
+.tip-y{background:rgba(253,224,71,.07);border:1px solid rgba(253,224,71,.22);color:#fde68a}
+.tip-r{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.22);color:#fca5a5}
+.tip-g{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);color:#86efac}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:480px){.compare{grid-template-columns:1fr}}
+.cc{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.cc-label{font-size:10px;font-weight:700;margin-bottom:8px;letter-spacing:.06em}
+.cc-body{font-size:12px;color:var(--muted);line-height:1.7}
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.4);border-radius:14px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{background:rgba(124,106,247,.25)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../setup.html">← セットアップガイドに戻る</a>
+
+  <div class="tag">用語解説</div>
+  <h1><em>APIキー</em>とは？</h1>
+  <div class="sub">あなただけに発行される「認証パスワード」</div>
+
+  <div class="analogy">
+    <div class="analogy-label">💡 たとえるなら</div>
+    <div class="analogy-body">
+      ホテルのルームキーと同じです。<br>
+      <strong>あなた専用のカード</strong>で、使用量の記録や課金の紐付けに使われます。<br><br>
+      <code>sk-ant-api03-xxxxxxxxxxxxxxxxxxxx</code> のような長い文字列で、<br>
+      これを Claude Code に渡すと「このユーザーとして使う」と認識されます。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>サブスクリプション vs APIキー</h2>
+    <div class="compare">
+      <div class="cc" style="border-color:rgba(74,222,128,.3)">
+        <div class="cc-label" style="color:var(--green)">★ おすすめ：claude.ai Pro/Max</div>
+        <div class="cc-body">
+          月額定額制。APIキー不要。<br>
+          ブラウザでログインするだけ。<br><br>
+          初めての方はこちらが簡単です。
+        </div>
+      </div>
+      <div class="cc">
+        <div class="cc-label" style="color:var(--muted)">APIキー（従量課金）</div>
+        <div class="cc-body">
+          使った分だけ課金。<br>
+          console.anthropic.com で発行。<br><br>
+          大量に使う場合や自動化に向いています。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>APIキーの発行手順（必要な場合のみ）</h2>
+    <ul class="steps">
+      <li><div class="step-n">1</div><div><strong>console.anthropic.com</strong> にアクセスしてログイン</div></li>
+      <li><div class="step-n">2</div><div>左メニューの「API Keys」をクリック</div></li>
+      <li><div class="step-n">3</div><div>「Create Key」ボタンを押して名前をつける（例：<code>mixi-cg-work</code>）</div></li>
+      <li><div class="step-n">4</div><div>表示されたキーをコピーして安全な場所に保存<br><span style="font-size:11px;color:var(--muted)">※この画面を閉じると二度と表示されません</span></div></li>
+    </ul>
+    <div class="key-mock">
+      <span class="key-label">API KEY</span>
+      <span>sk-ant-api03-●●●●●●●●●●●●●●●●●●●●●●●●</span>
+    </div>
+  </div>
+
+  <div class="tip tip-r">
+    <span>🚨</span>
+    <div><strong>APIキーは絶対に他人に見せないでください。</strong>Gitにコミットしたり、Slackに貼ったりすると、第三者に不正利用される可能性があります。</div>
+  </div>
+
+  <div class="tip tip-y">
+    <span>⚠️</span>
+    <div>APIキーをなくしたり漏洩した場合は、すぐに console.anthropic.com から<strong>無効化（Revoke）</strong>して新しいキーを発行してください。</div>
+  </div>
+
+  <div class="tip tip-g">
+    <span>✅</span>
+    <div>claude.ai の Pro/Max プランを使う場合は APIキー不要です。<code>claude</code> コマンドを実行するとブラウザが開き、ログインするだけで認証が完了します。</div>
+  </div>
+
+  <a class="back-cta" href="../setup.html">← セットアップに戻って続ける</a>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Discovery</title>
+<style>
+:root {
+  --bg:#0c0c10; --s1:#16161e; --s2:#1e1e28; --border:#2a2a38;
+  --text:#e2e2ec; --muted:#6a6a88; --accent:#7c6af7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;min-height:100vh}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:100;background:rgba(12,12,16,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:14px}
+.logo{font-size:13px;font-weight:800;letter-spacing:.03em;white-space:nowrap}
+.logo em{color:var(--accent);font-style:normal}
+.filters{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1}
+.filters::-webkit-scrollbar{display:none}
+.fb{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:5px}
+.fb:hover,.fb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fb .fi{font-size:12px}
+
+/* ── Grid ── */
+.feed{padding:18px 14px;columns:270px;column-gap:12px;max-width:1600px;margin:0 auto}
+
+/* ── Card ── */
+.card{break-inside:avoid;background:var(--s1);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;cursor:default}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(124,106,247,.18);border-color:rgba(124,106,247,.5)}
+
+/* Card header band */
+.ch{padding:14px 14px 10px;display:flex;align-items:flex-start;gap:10px}
+.icon-wrap{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ch-right{flex:1;min-width:0}
+.cat-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.card-title{font-size:13px;font-weight:700;line-height:1.35;color:var(--text)}
+
+/* Gradient icon backgrounds per category */
+.ic-cmd    {background:linear-gradient(135deg,#312e81,#4f46e5)}
+.ic-hook   {background:linear-gradient(135deg,#78350f,#d97706)}
+.ic-mcp    {background:linear-gradient(135deg,#0c4a6e,#0891b2)}
+.ic-memory {background:linear-gradient(135deg,#14532d,#16a34a)}
+.ic-cg     {background:linear-gradient(135deg,#581c87,#9333ea)}
+.ic-design {background:linear-gradient(135deg,#881337,#db2777)}
+.ic-tips   {background:linear-gradient(135deg,#713f12,#ca8a04)}
+.ic-agent  {background:linear-gradient(135deg,#7f1d1d,#dc2626)}
+
+.cl-cmd    {color:#818cf8}
+.cl-hook   {color:#fbbf24}
+.cl-mcp    {color:#22d3ee}
+.cl-memory {color:#4ade80}
+.cl-cg     {color:#c084fc}
+.cl-design {color:#f472b6}
+.cl-tips   {color:#fde047}
+.cl-agent  {color:#f87171}
+
+/* Divider */
+.cd{height:1px;background:var(--border);margin:0 14px}
+
+/* Card body */
+.cb{padding:10px 14px 12px}
+.desc{font-size:11.5px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+
+/* Code */
+.code{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:10px;color:#93c5fd;white-space:pre;overflow-x:auto;line-height:1.55;margin-bottom:10px}
+
+/* Bullets */
+.blist{list-style:none;margin-bottom:10px}
+.blist li{font-size:11.5px;color:var(--muted);padding:2px 0 2px 13px;position:relative;line-height:1.55}
+.blist li::before{content:'›';position:absolute;left:0;color:var(--accent)}
+
+/* Impact row */
+.impacts{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.imp{font-size:10px;padding:2px 8px;border-radius:7px;background:rgba(124,106,247,.1);color:#a5b4fc;border:1px solid rgba(124,106,247,.2)}
+
+/* Footer */
+.cf{border-top:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* Scope */
+.scope{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sc-solo{background:rgba(34,211,238,.08);color:#22d3ee;border:1px solid rgba(34,211,238,.18)}
+.sc-team{background:rgba(74,222,128,.08);color:#4ade80;border:1px solid rgba(74,222,128,.18)}
+.sc-both{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.18)}
+
+/* Tool badges */
+.tools{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.tool{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;display:flex;align-items:center;gap:3px}
+.tool-none{color:var(--muted);background:var(--s2);border:1px solid var(--border);font-weight:400;font-style:italic}
+/* Tool-specific colors */
+.t-figma    {background:rgba(242,78,30,.15);   color:#f77f5a;border:1px solid rgba(242,78,30,.25)}
+.t-github   {background:rgba(110,64,201,.15);  color:#9d7fe8;border:1px solid rgba(110,64,201,.25)}
+.t-blender  {background:rgba(234,118,0,.15);   color:#f9a640;border:1px solid rgba(234,118,0,.25)}
+.t-houdini  {background:rgba(255,71,19,.15);   color:#ff7a52;border:1px solid rgba(255,71,19,.25)}
+.t-slack    {background:rgba(74,21,75,.3);     color:#c084fc;border:1px solid rgba(74,21,75,.5)}
+.t-python   {background:rgba(55,118,171,.15);  color:#60a5fa;border:1px solid rgba(55,118,171,.25)}
+.t-eslint   {background:rgba(75,50,195,.15);   color:#818cf8;border:1px solid rgba(75,50,195,.25)}
+.t-prettier {background:rgba(234,88,12,.15);   color:#fb923c;border:1px solid rgba(234,88,12,.25)}
+.t-tailwind {background:rgba(6,182,212,.15);   color:#22d3ee;border:1px solid rgba(6,182,212,.25)}
+.t-storybook{background:rgba(255,71,133,.15);  color:#f472b6;border:1px solid rgba(255,71,133,.25)}
+.t-ue5      {background:rgba(0,0,0,.4);        color:#94a3b8;border:1px solid #334155}
+.t-airtable {background:rgba(18,165,148,.15);  color:#2dd4bf;border:1px solid rgba(18,165,148,.25)}
+.t-chromatic{background:rgba(255,71,133,.15);  color:#f472b6;border:1px solid rgba(255,71,133,.25)}
+.t-imagemagick{background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(100,116,139,.25)}
+.t-web      {background:rgba(16,185,129,.15);  color:#34d399;border:1px solid rgba(16,185,129,.25)}
+
+/* Source link */
+.src{margin-left:auto;font-size:10px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap;padding:2px 7px;border-radius:6px;border:1px solid var(--border);transition:all .15s}
+.src:hover{color:var(--text);border-color:var(--accent);background:rgba(124,106,247,.08)}
+
+/* NEW badge */
+.nbadge{font-size:9px;font-weight:800;background:var(--accent);color:#fff;padding:1px 5px;border-radius:5px;letter-spacing:.05em}
+
+/* Date chip */
+.datechip{font-size:10px;color:var(--muted)}
+
+/* Loader */
+.loader{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.ld{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bo 1.2s infinite}
+.ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
+@keyframes bo{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Claude Code <em>Discovery</em></div>
+  <div class="filters" id="filters">
+    <button class="fb on" data-f="all"><span class="fi">✦</span> すべて</button>
+    <button class="fb" data-f="cmd"><span class="fi">⌨️</span> カスタムコマンド</button>
+    <button class="fb" data-f="hook"><span class="fi">🪝</span> Hooks</button>
+    <button class="fb" data-f="mcp"><span class="fi">🔌</span> MCP連携</button>
+    <button class="fb" data-f="memory"><span class="fi">🧠</span> CLAUDE.md</button>
+    <button class="fb" data-f="cg"><span class="fi">🎬</span> CG映像</button>
+    <button class="fb" data-f="design"><span class="fi">🎨</span> デザイン</button>
+    <button class="fb" data-f="agent"><span class="fi">🤖</span> エージェント</button>
+    <button class="fb" data-f="tips"><span class="fi">💡</span> Tips</button>
+  </div>
+</header>
+
+<div class="feed" id="feed"></div>
+<div class="loader" id="loader"><span class="ld"></span><span class="ld"></span><span class="ld"></span></div>
+
+<script>
+const CAT = {
+  cmd:    { label:'カスタムコマンド', icon:'⌨️', ic:'ic-cmd',    cl:'cl-cmd'    },
+  hook:   { label:'Hooks',           icon:'🪝', ic:'ic-hook',   cl:'cl-hook'   },
+  mcp:    { label:'MCP連携',         icon:'🔌', ic:'ic-mcp',    cl:'cl-mcp'    },
+  memory: { label:'CLAUDE.md',       icon:'🧠', ic:'ic-memory', cl:'cl-memory' },
+  cg:     { label:'CG映像',          icon:'🎬', ic:'ic-cg',     cl:'cl-cg'     },
+  design: { label:'デザイン',        icon:'🎨', ic:'ic-design', cl:'cl-design' },
+  tips:   { label:'Tips',            icon:'💡', ic:'ic-tips',   cl:'cl-tips'   },
+  agent:  { label:'エージェント',    icon:'🤖', ic:'ic-agent',  cl:'cl-agent'  },
+};
+
+const TOOL_CLASS = {
+  'Figma':'t-figma','GitHub':'t-github','Blender':'t-blender','Houdini':'t-houdini',
+  'Slack':'t-slack','Python':'t-python','ESLint':'t-eslint','Prettier':'t-prettier',
+  'Tailwind CSS':'t-tailwind','Storybook':'t-storybook','Unreal Engine 5':'t-ue5',
+  'Airtable':'t-airtable','Chromatic':'t-chromatic','ImageMagick':'t-imagemagick',
+  'Web（外部サイト）':'t-web',
+};
+const TOOL_ICON = {
+  'Figma':'🎨','GitHub':'🐙','Blender':'🟠','Houdini':'⚡','Slack':'💬',
+  'Python':'🐍','ESLint':'🔍','Prettier':'✨','Tailwind CSS':'🌊',
+  'Storybook':'📖','Unreal Engine 5':'🎮','Airtable':'📊','Chromatic':'🎪',
+  'ImageMagick':'🖼','Web（外部サイト）':'🌐',
+};
+const SCOPE_CFG = {
+  solo:{ cls:'sc-solo', label:'👤 個人' },
+  team:{ cls:'sc-team', label:'👥 チーム' },
+  both:{ cls:'sc-both', label:'👤👥 両方' },
+};
+
+// ─── Card data ───────────────────────────────────────────────────────────────
+const CARDS = [
+
+  // ── カスタムコマンド ────────────────────────────────
+  { cat:'cmd', date:'2026-05-21', isNew:true,
+    title:'スラッシュコマンドを自作する基本',
+    desc:'.claude/commands/ にMarkdownを置くだけ。ファイル名がそのままコマンド名になる。',
+    code:`# .claude/commands/review.md
+---
+description: コードレビューを実行
+---
+以下をレビューして（可読性・性能・セキュリティ）:
+$ARGUMENTS`,
+    impact:['開発効率化','コード品質','チームワークフロー'],
+    scope:'both', tools:[],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+  { cat:'cmd', date:'2026-05-20', isNew:true,
+    title:'CG向け：アセット命名チェックコマンド',
+    desc:'チームの命名規則をコマンドに焼き込む。毎回説明しなくていい。',
+    code:`# .claude/commands/asset-check.md
+対象ファイルをチームルールでチェック:
+- テクスチャ: {name}_{ch}_####.exr
+- メッシュ: {type}_{name}_v###.fbx
+対象: $ARGUMENTS`,
+    impact:['CG映像パイプライン','アセット品質'],
+    scope:'team', tools:[],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+  { cat:'cmd', date:'2026-05-18',
+    title:'/figma-to-component でデザイン変換',
+    desc:'FigmaのURLを渡すだけでReactコンポーネントに変換するコマンドを自作できる。',
+    code:`/figma-to-component https://figma.com/file/xxx`,
+    impact:['デザインとコードの同期','フロントエンド開発'],
+    scope:'both', tools:['Figma'],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+  { cat:'cmd', date:'2026-05-16',
+    title:'$ARGUMENTS で引数付き汎用リサーチBot',
+    desc:'コマンドに引数を渡すことでリサーチ対象をその場で指定できる。',
+    code:`# .claude/commands/research.md
+---
+allowed-tools: ["WebSearch","WebFetch"]
+---
+「$ARGUMENTS」の最新情報を調査して
+要点を箇条書きにまとめ、ソースURLも記載して。`,
+    impact:['情報収集・リサーチ','技術キャッチアップ'],
+    scope:'solo', tools:['Web（外部サイト）'],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+  { cat:'cmd', date:'2026-05-10',
+    title:'context:fork で安全に実験',
+    desc:'隔離コンテキストで実行するのでメインの会話を汚さない。',
+    code:`---
+context: fork
+disable-model-invocation: true
+---
+以下のリファクタリングを提案して（実行はしない）:
+$ARGUMENTS`,
+    impact:['安全性','実験・プロトタイピング'],
+    scope:'solo', tools:[],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+  { cat:'cmd', date:'2026-05-05',
+    title:'グローバル vs プロジェクトコマンド',
+    desc:'置く場所によって個人専用かチーム共有かが変わる。',
+    items:['~/.claude/commands/ → 個人用・全プロジェクト共通','./claude/commands/ → チーム共有（Gitにコミット）','commands/db/migrate.md → /db:migrate のように階層化可能'],
+    impact:['チームワークフロー','個人生産性'],
+    scope:'both', tools:[],
+    src:{ label:'Commands ドキュメント', url:'https://code.claude.com/docs/en/agent-sdk/slash-commands.md' },
+  },
+
+  // ── Hooks ─────────────────────────────────────────────
+  { cat:'hook', date:'2026-05-21', isNew:true,
+    title:'PostToolUse: ファイル保存後に自動Lint',
+    desc:'編集のたびにESLint+Prettierを自動実行。Claudeが書いたコードも常にフォーマット済みに。',
+    code:`{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command",
+        "command": "npx eslint --fix $FILE && npx prettier --write $FILE" }]
+    }]
+  }
+}`,
+    impact:['コード品質','開発効率化'],
+    scope:'team', tools:['ESLint','Prettier'],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+  { cat:'hook', date:'2026-05-20', isNew:true,
+    title:'PreToolUse: 危険コマンドをブロック',
+    desc:'rm -rf や force push を事前ブロック。チームのヒューマンエラーを防ぐ。',
+    code:`{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{ "type": "command",
+        "if": "Bash(rm -rf *|git push --force)",
+        "command": "echo '危険なコマンドです' && exit 1" }]
+    }]
+  }
+}`,
+    impact:['安全性','インシデント防止'],
+    scope:'team', tools:[],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+  { cat:'hook', date:'2026-05-19',
+    title:'SessionEnd → Slack通知でバッチ完了を知らせる',
+    desc:'セッション終了時にHTTP Hookで通知。夜間レンダーの完了通知にも使える。',
+    code:`{
+  "hooks": {
+    "SessionEnd": [{ "hooks": [{
+      "type": "http",
+      "url": "https://hooks.slack.com/services/xxx",
+      "body": { "text": "完了: {{session.summary}}" }
+    }] }]
+  }
+}`,
+    impact:['自動通知','CG映像パイプライン'],
+    scope:'team', tools:['Slack'],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+  { cat:'hook', date:'2026-05-15',
+    title:'CG向け：テクスチャ保存時に自動最適化',
+    desc:'EXR/PNG書き込みのたびにImageMagickで自動圧縮。アセット容量を常に最適に保つ。',
+    code:`{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Write",
+      "hooks": [{ "type": "command",
+        "if": "Write(assets/textures/*.{exr,png})",
+        "command": ".claude/hooks/optimize-texture.sh $FILE" }]
+    }]
+  }
+}`,
+    impact:['CG映像パイプライン','ストレージ最適化'],
+    scope:'team', tools:['ImageMagick'],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+  { cat:'hook', date:'2026-05-12',
+    title:'SessionStart: 毎朝のブリーフィングを自動表示',
+    desc:'セッション開始時にレンダーキュー・締め切り・未完了タスクを自動表示。',
+    code:`{
+  "hooks": {
+    "SessionStart": [{ "hooks": [{
+      "type": "command",
+      "command": "python .claude/hooks/morning_brief.py"
+    }] }]
+  }
+}`,
+    impact:['制作効率化','プロジェクト管理'],
+    scope:'solo', tools:['Python'],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+  { cat:'hook', date:'2026-05-08',
+    title:'Hookの5種類まとめ',
+    desc:'用途に合わせて5タイプを使い分ける。',
+    items:['command — シェルスクリプト実行（最も汎用）','http — Slack/Discord/Webhook通知','mcp_tool — 外部ツールAPI呼び出し','prompt — Claudeに yes/no を確認させる','agent — 別エージェントを並列起動'],
+    impact:['自動化','外部連携','ワークフロー制御'],
+    scope:'both', tools:[],
+    src:{ label:'Hooks ドキュメント', url:'https://code.claude.com/docs/en/hooks.md' },
+  },
+
+  // ── MCP ───────────────────────────────────────────────
+  { cat:'mcp', date:'2026-05-21', isNew:true,
+    title:'Figmaデザインを直接読み込んでコード化',
+    desc:'Figma MCPを設定するとClaudeがFigmaファイルを直接参照。「このコンポーネントをコードにして」が一発で動く。',
+    code:`claude mcp add --transport http figma \\
+  https://mcp.figma.com/api \\
+  --header "Authorization: Bearer $FIGMA_TOKEN" \\
+  --scope project`,
+    impact:['デザインとコードの同期','フロントエンド開発'],
+    scope:'both', tools:['Figma'],
+    src:{ label:'MCP ドキュメント', url:'https://code.claude.com/docs/en/mcp.md' },
+  },
+  { cat:'mcp', date:'2026-05-19',
+    title:'GitHub IssueをそのままClaudeに実装させる',
+    desc:'GitHub MCPを設定すると「Issue #52を実装してPRを出して」が一発で動く。',
+    code:`claude mcp add --transport http github \\
+  https://mcp.github.com/api \\
+  --header "Authorization: Bearer $GH_TOKEN"`,
+    impact:['開発効率化','タスク管理'],
+    scope:'both', tools:['GitHub'],
+    src:{ label:'MCP ドキュメント', url:'https://code.claude.com/docs/en/mcp.md' },
+  },
+  { cat:'mcp', date:'2026-05-17',
+    title:'Blenderのシーンを自然言語で操作',
+    desc:'ローカルMCPサーバーを立てるとBlenderのシーン操作をスクリプト不要で指示できる。',
+    code:`claude mcp add --transport stdio blender \\
+  -- python blender_mcp_server.py
+
+# 使い方
+"全ライトのIntensityを1.5倍にして
+ レンダープレビューを更新して"`,
+    impact:['3D制作自動化','CG映像パイプライン'],
+    scope:'solo', tools:['Blender','Python'],
+    src:{ label:'MCP ドキュメント', url:'https://code.claude.com/docs/en/mcp.md' },
+  },
+  { cat:'mcp', date:'2026-05-14',
+    title:'MCPスコープ: local / project / user の違い',
+    desc:'チーム共有と個人設定を使い分けることでセキュリティと利便性を両立。',
+    items:['local（デフォルト）: 現プロジェクトのみ','project: チーム共有（.mcp.jsonをGitにコミット）','user: 全プロジェクト共通の個人設定'],
+    impact:['セキュリティ','チームワークフロー'],
+    scope:'both', tools:[],
+    src:{ label:'MCP ドキュメント', url:'https://code.claude.com/docs/en/mcp.md' },
+  },
+  { cat:'mcp', date:'2026-05-09',
+    title:'Airtableで素材管理DBをClaudeに操作させる',
+    desc:'CG素材のメタデータをAirtableで管理。Claudeが直接検索・更新できる。',
+    code:`claude mcp add --transport stdio airtable \\
+  -- npx -y airtable-mcp-server
+
+"今週レンダー完了したショットを
+ Airtableの進捗シートに更新して"`,
+    impact:['アセット管理','CG映像パイプライン'],
+    scope:'team', tools:['Airtable'],
+    src:{ label:'MCP ドキュメント', url:'https://code.claude.com/docs/en/mcp.md' },
+  },
+
+  // ── CLAUDE.md ─────────────────────────────────────────
+  { cat:'memory', date:'2026-05-21', isNew:true,
+    title:'CLAUDE.md の4階層を理解する',
+    desc:'下の階層ほど優先度が高い。個人設定とチーム共有を分離できる。',
+    items:['~/.claude/CLAUDE.md → 全プロジェクト共通の個人設定','./CLAUDE.md → チーム共有（Gitにコミット）','./CLAUDE.local.md → 個人用（.gitignoreに追加）','./src/CLAUDE.md → サブディレクトリに特化したルール'],
+    impact:['チームワークフロー','オンボーディング','コンテキスト管理'],
+    scope:'both', tools:[],
+    src:{ label:'Memory ドキュメント', url:'https://code.claude.com/docs/en/memory.md' },
+  },
+  { cat:'memory', date:'2026-05-18',
+    title:'CG制作パイプラインをCLAUDE.mdに一度書く',
+    desc:'毎回「うちはProRes 422で」と説明しなくていい。一度書けばセッションをまたいで有効。',
+    code:`## CG Asset Pipeline
+### 出力フォーマット
+- 映像: H.264 MP4, 23.976fps, 2160p
+- アーカイブ: ProRes 422, 12bit, DCI-P3
+### ツール
+- 3D: Houdini 20.5 / Blender 4.3
+- コンポジット: Nuke 15.1`,
+    impact:['CG映像パイプライン','オンボーディング'],
+    scope:'team', tools:[],
+    src:{ label:'Memory ドキュメント', url:'https://code.claude.com/docs/en/memory.md' },
+  },
+  { cat:'memory', date:'2026-05-15',
+    title:'@インポートで大きなドキュメントを参照',
+    desc:'CLAUDE.mdから@で別ファイルをインポートできるので大きなドキュメントを分割管理できる。',
+    code:`# CLAUDE.md
+@./docs/ARCHITECTURE.md
+@./docs/STYLE_GUIDE.md
+@~/.claude/personal-prefs.md`,
+    impact:['ドキュメント管理','チームワークフロー'],
+    scope:'both', tools:[],
+    src:{ label:'Memory ドキュメント', url:'https://code.claude.com/docs/en/memory.md' },
+  },
+  { cat:'memory', date:'2026-05-11',
+    title:'pathsで特定ディレクトリだけにルールを適用',
+    desc:'frontmatterのpathsでReactコンポーネントなど特定ファイルだけにルールを限定できる。',
+    code:`# src/components/CLAUDE.md
+---
+paths:
+  - "src/components/**/*.tsx"
+---
+## Reactコンポーネント規則
+- Tailwindのみ使用
+- PropTypesの型定義必須`,
+    impact:['コード品質','チームワークフロー'],
+    scope:'team', tools:[],
+    src:{ label:'Memory ドキュメント', url:'https://code.claude.com/docs/en/memory.md' },
+  },
+
+  // ── CG映像 ────────────────────────────────────────────
+  { cat:'cg', date:'2026-05-21', isNew:true,
+    title:'Houdini VEXを日本語指示で生成',
+    desc:'VEX構文を毎回調べなくていい。やりたいことを日本語で伝えるだけで動くコードが来る。',
+    code:`# プロンプト例
+"Y座標に応じてcolorをグラデーション割り当て。
+ Y=0で青、Y=5で赤。Point Wrangle SOP"
+
+# → 生成結果
+float t = clamp(@P.y/5.0, 0, 1);
+@Cd = lerp(set(0,0,1), set(1,0,0), t);`,
+    impact:['CG映像パイプライン','制作効率化'],
+    scope:'solo', tools:['Houdini'],
+    src:{ label:'Houdini VEX Documentation', url:'https://www.sidefx.com/docs/houdini/vex/index.html' },
+  },
+  { cat:'cg', date:'2026-05-20', isNew:true,
+    title:'Blender Pythonのバッチ処理を自動生成',
+    desc:'「100オブジェクトのマテリアルを一括差し替えたい」→ スクリプトを作ってもらう。2時間が30秒に。',
+    code:`# 生成例: 全選択オブジェクトのSubdivを一括変更
+import bpy
+def set_subdiv(level):
+    for obj in bpy.context.selected_objects:
+        for mod in obj.modifiers:
+            if mod.type == 'SUBSURF':
+                mod.render_levels = level`,
+    impact:['制作効率化','3D制作自動化'],
+    scope:'solo', tools:['Blender','Python'],
+    src:{ label:'Blender Python API', url:'https://docs.blender.org/api/current/' },
+  },
+  { cat:'cg', date:'2026-05-17',
+    title:'ビジュアル方針を30分で言語化',
+    desc:'参考作品名を数個渡すだけで、チーム共有できるスタイルガイドのドラフトが完成する。',
+    items:['参考作品名 + ターゲット + NGスタイルを渡す','ライティング・カラー・カメラワークの方針が自動生成','ArtStation検索キーワードも同時に生成','そのままNotionやWikiに貼れる品質で出力'],
+    impact:['CG映像パイプライン','チームコミュニケーション','制作品質'],
+    scope:'team', tools:[],
+    src:{ label:'社内活用事例' },
+  },
+  { cat:'cg', date:'2026-05-13',
+    title:'UE5 Blueprintの処理をClaudeに解説させる',
+    desc:'複雑なBPグラフのスクショを渡すと処理フローを日本語で解説。新人教育に使える。',
+    items:['BPスクリーンショット + 「何をしているか説明して」','処理フローを日本語でわかりやすく解説','改善点・リファクタリング提案も同時に','新人向けドキュメントとして整形も可能'],
+    impact:['オンボーディング','ナレッジ共有'],
+    scope:'both', tools:['Unreal Engine 5'],
+    src:{ label:'UE5 Blueprint Docs', url:'https://dev.epicgames.com/documentation/en-us/unreal-engine/blueprints-visual-scripting-in-unreal-engine' },
+  },
+  { cat:'cg', date:'2026-05-07',
+    title:'クライアントレビューコメントをタスクリスト化',
+    desc:'20件のフィードバックをそのまま貼ると優先度付きのタスクリストになる。',
+    code:`"以下のレビューコメントを
+ 必須修正/推奨修正/次バージョン検討
+ に分類してタスクリスト化して:
+
+[コメントをそのまま貼り付け]"`,
+    impact:['プロジェクト管理','クライアント対応'],
+    scope:'solo', tools:[],
+    src:{ label:'社内活用事例' },
+  },
+
+  // ── デザイン ──────────────────────────────────────────
+  { cat:'design', date:'2026-05-21', isNew:true,
+    title:'デザイントークンをCSS/Tailwindに一括変換',
+    desc:'Figmaのカラー・タイポグラフィ定義をCSSカスタムプロパティとTailwind設定に同時出力。',
+    code:`"以下のトークンをTailwind config と
+ CSS変数の両方で出力して:
+ Primary: #7C6AF7 / Text: #E8E8F0
+ Radius: 8px,14px / Font: 12〜32px"`,
+    impact:['デザインシステム管理','フロントエンド開発'],
+    scope:'both', tools:['Figma','Tailwind CSS'],
+    src:{ label:'Tailwind CSS Docs', url:'https://tailwindcss.com/docs/configuration' },
+  },
+  { cat:'design', date:'2026-05-19',
+    title:'アクセシビリティチェックをコマンド化',
+    desc:'/a11y-check コマンドを作っておくとWCAG準拠チェックが瞬時に走る。',
+    code:`# .claude/commands/a11y-check.md
+---
+description: WCAG 2.1 AA準拠チェック
+---
+WCAG 2.1 AAでチェック:
+カラーコントラスト / aria / キーボード操作
+$ARGUMENTS`,
+    impact:['アクセシビリティ','デザイン品質'],
+    scope:'both', tools:[],
+    src:{ label:'WCAG 2.1 Guidelines', url:'https://www.w3.org/TR/WCAG21/' },
+  },
+  { cat:'design', date:'2026-05-16',
+    title:'Figma → Storybookを一括生成',
+    desc:'FigmaのコンポーネントリストをStorybookのストーリーファイルに自動変換。ドキュメント作業がほぼゼロに。',
+    items:['Figmaからコンポーネント名・Propsを抽出','defaultStory + バリエーションを自動生成','JSDocをargTypesに変換','Chromatic用のビジュアルリグレッションテストも追加'],
+    impact:['デザインシステム管理','ドキュメント'],
+    scope:'team', tools:['Figma','Storybook','Chromatic'],
+    src:{ label:'Storybook Docs', url:'https://storybook.js.org/docs' },
+  },
+  { cat:'design', date:'2026-05-11',
+    title:'UIコピーの複数バリエーションを一気に生成',
+    desc:'トーン別（フォーマル/カジュアル/緊急）でボタンラベル5〜10案が一発で来る。',
+    items:['トーン指定（丁寧/カジュアル/簡潔）で出し分け','A/Bテスト用のコピーセット作成にも','日英中の多言語で同時生成も可能'],
+    impact:['UXライティング','A/Bテスト'],
+    scope:'solo', tools:[],
+    src:{ label:'社内活用事例' },
+  },
+
+  // ── エージェント ──────────────────────────────────────
+  { cat:'agent', date:'2026-05-21', isNew:true,
+    title:'サブエージェントで並列タスク実行',
+    desc:'独立したタスクを同時並走させる。リサーチ+コード生成+レビューを同時進行。',
+    code:`"以下の3つを並列で実行して:
+1. Agent: Houdini 20の新機能をリサーチ
+2. Agent: Blender 4.3との機能比較表を作成
+3. Agent: 移行コストを試算
+完了後、統合レポートにまとめて"`,
+    impact:['制作効率化','情報収集・リサーチ'],
+    scope:'solo', tools:[],
+    src:{ label:'Sub-agents ドキュメント', url:'https://code.claude.com/docs/en/sub-agents.md' },
+  },
+  { cat:'agent', date:'2026-05-18',
+    title:'Exploreエージェントで大規模コードベース検索',
+    desc:'大量のファイルを高速で検索する専用エージェント。シンボルがどこで使われているかを一発で特定。',
+    code:`"Exploreエージェントを使って
+ src/ 以下で useAnimationFrame を
+ 参照しているファイルを全て特定して。
+ 検索範囲: thorough"`,
+    impact:['開発効率化','リファクタリング'],
+    scope:'solo', tools:[],
+    src:{ label:'Sub-agents ドキュメント', url:'https://code.claude.com/docs/en/sub-agents.md' },
+  },
+  { cat:'agent', date:'2026-05-14',
+    title:'/schedule でエージェントをcron定期実行',
+    desc:'毎朝ニュース収集してSlack投稿、毎週統計レポートなどをクラウド上で自律実行。PC不要。',
+    items:['/schedule で定期実行エージェントを登録','cron記法で実行タイミングを指定','レポート生成・通知・バッチ処理に最適','クラウド上で実行されるためPC不要'],
+    impact:['自動化','情報収集・リサーチ'],
+    scope:'both', tools:['Slack'],
+    src:{ label:'Routines ドキュメント', url:'https://code.claude.com/docs/en/routines.md' },
+  },
+
+  // ── Tips ──────────────────────────────────────────────
+  { cat:'tips', date:'2026-05-21', isNew:true,
+    title:'settings.json でコマンドを事前承認',
+    desc:'毎回許可を求められるコマンドをallowリストへ。deny で危険コマンドを禁止も。',
+    code:`{
+  "permissions": {
+    "allow": ["Bash(npm run *)","Write(./output/**)"],
+    "deny":  ["Bash(rm -rf *)","Bash(git push --force)"]
+  }
+}`,
+    impact:['安全性','開発効率化'],
+    scope:'both', tools:[],
+    src:{ label:'Settings ドキュメント', url:'https://code.claude.com/docs/en/settings.md' },
+  },
+  { cat:'tips', date:'2026-05-19',
+    title:'キーバインドでコマンドを瞬間起動',
+    desc:'keybindings.json にショートカットを設定。/review を Ctrl+R 一発で。',
+    code:`// ~/.claude/keybindings.json
+[
+  { "key": "ctrl+r",       "command": "/review" },
+  { "key": "ctrl+shift+d", "command": "/deploy staging" },
+  { "key": "ctrl+a",       "command": "/asset-check" }
+]`,
+    impact:['個人生産性'],
+    scope:'solo', tools:[],
+    src:{ label:'Settings ドキュメント', url:'https://code.claude.com/docs/en/settings.md' },
+  },
+  { cat:'tips', date:'2026-05-16',
+    title:'/fast でFast Modeをトグル',
+    desc:'Claude Opus 4.6 の高速出力モード。小さいモデルへのダウングレードではない。長いコード生成に効果的。',
+    items:['/fast でFast Modeのオン/オフを切り替え','Opus 4.6 ユーザーのみ利用可能','長時間の作業セッションに向いている'],
+    impact:['個人生産性','開発効率化'],
+    scope:'solo', tools:[],
+    src:{ label:'Claude Code 概要', url:'https://code.claude.com/docs/en/overview.md' },
+  },
+  { cat:'tips', date:'2026-05-12',
+    title:'effortLevel で推論の深さを調整',
+    desc:'単純作業はlow、複雑な設計はxhigh。コスト対効果を意識して使い分ける。',
+    code:`// settings.json
+{ "effortLevel": "high" }
+// low   → バッチ・繰り返し処理
+// medium → 日常的なコード補助
+// high  → 複雑な設計・リファクタ
+// xhigh → アーキテクチャ設計`,
+    impact:['コスト最適化','個人生産性'],
+    scope:'both', tools:[],
+    src:{ label:'Settings ドキュメント', url:'https://code.claude.com/docs/en/settings.md' },
+  },
+  { cat:'tips', date:'2026-05-08',
+    title:'/plan で実装前に計画を承認',
+    desc:'大規模リファクタ前にPlan Modeで計画を確認。承認してから初めてコード変更を実行する。',
+    items:['/plan モードで実装計画を先に提示','承認してから初めてコード変更を実行','ExitPlanModeで承認・変更を加えて再プランも可能'],
+    impact:['安全性','意思決定支援'],
+    scope:'solo', tools:[],
+    src:{ label:'Permission Modes', url:'https://code.claude.com/docs/en/permission-modes.md' },
+  },
+  { cat:'tips', date:'2026-05-04',
+    title:'/init でCLAUDE.mdを自動生成',
+    desc:'既存プロジェクトのルートで /init を実行するとコードを解析してCLAUDE.mdのドラフトを自動作成。',
+    code:`# 既存プロジェクトのルートで
+/init
+
+# → コードベースを解析して
+# → CLAUDE.md のドラフトを自動生成`,
+    impact:['オンボーディング','チームワークフロー'],
+    scope:'team', tools:[],
+    src:{ label:'Claude Code 概要', url:'https://code.claude.com/docs/en/overview.md' },
+  },
+];
+
+// ── Render ─────────────────────────────────────────────────────────────────
+const feed = document.getElementById('feed');
+const loader = document.getElementById('loader');
+let filter = 'all', page = 0;
+const PER_PAGE = 12;
+
+function toolBadge(name) {
+  const cls = TOOL_CLASS[name] || 't-web';
+  const icon = TOOL_ICON[name] || '🔧';
+  return `<span class="tool ${cls}">${icon} ${name}</span>`;
+}
+
+function renderCard(c) {
+  const cat = CAT[c.cat];
+  const sc  = SCOPE_CFG[c.scope] || SCOPE_CFG.solo;
+
+  const content = c.code
+    ? `<div class="code">${esc(c.code)}</div>`
+    : c.items
+      ? `<ul class="blist">${c.items.map(i=>`<li>${i}</li>`).join('')}</ul>`
+      : '';
+
+  const toolsHtml = c.tools && c.tools.length
+    ? c.tools.map(toolBadge).join('')
+    : `<span class="tool tool-none">単体</span>`;
+
+  const srcHtml = c.src
+    ? (c.src.url
+        ? `<a class="src" href="${c.src.url}" target="_blank" rel="noopener">↗ ${c.src.label}</a>`
+        : `<span class="src">📄 ${c.src.label}</span>`)
+    : '';
+
+  const impactHtml = c.impact && c.impact.length
+    ? `<div class="impacts">${c.impact.map(i=>`<span class="imp">${i}</span>`).join('')}</div>`
+    : '';
+
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.dataset.cat = c.cat;
+  el.innerHTML = `
+    <div class="ch">
+      <div class="icon-wrap ${cat.ic}">${cat.icon}</div>
+      <div class="ch-right">
+        <div class="cat-label ${cat.cl}">${cat.label}${c.isNew ? ' <span class="nbadge">NEW</span>' : ''}</div>
+        <div class="card-title">${c.title}</div>
+      </div>
+      <span class="datechip">${c.date}</span>
+    </div>
+    <div class="cd"></div>
+    <div class="cb">
+      <p class="desc">${c.desc}</p>
+      ${content}
+      ${impactHtml}
+      <div class="cf">
+        <span class="scope ${sc.cls}">${sc.label}</span>
+        <div class="tools">${toolsHtml}</div>
+        ${srcHtml}
+      </div>
+    </div>`;
+  return el;
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+function filtered(){ return filter==='all' ? CARDS : CARDS.filter(c=>c.cat===filter) }
+
+function loadMore(){
+  const list = filtered();
+  const slice = list.slice(page*PER_PAGE, (page+1)*PER_PAGE);
+  if(!slice.length){ loader.style.display='none'; return; }
+  slice.forEach(c => feed.appendChild(renderCard(c)));
+  page++;
+  if(page*PER_PAGE >= list.length){
+    page=0;
+    CARDS.forEach(c=>{ const d=new Date(c.date); d.setDate(d.getDate()-28); c.date=d.toISOString().slice(0,10); c.isNew=false; });
+  }
+}
+
+new IntersectionObserver(e=>{ if(e[0].isIntersecting) loadMore() },{threshold:.1}).observe(loader);
+
+document.getElementById('filters').addEventListener('click', e=>{
+  const btn = e.target.closest('.fb');
+  if(!btn) return;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  filter = btn.dataset.f;
+  feed.innerHTML=''; page=0; loader.style.display='';
+  loadMore();
+});
+</script>
+</body>
+</html>

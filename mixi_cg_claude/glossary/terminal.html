@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ターミナルとは？ — Claude Code 用語集</title>
+<style>
+:root{--bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;--text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;--green:#4ade80;--cyan:#22d3ee;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:36px;transition:color .2s}
+.back:hover{color:var(--accent2)}
+.tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--cyan);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(26px,5vw,40px);font-weight:900;line-height:1.15;margin-bottom:10px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--cyan),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:14px;color:var(--muted);margin-bottom:36px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+h2{font-size:16px;font-weight:700;margin-bottom:10px}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+.analogy{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.2);border-radius:14px;padding:20px;margin-bottom:16px}
+.analogy-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--cyan);margin-bottom:10px;text-transform:uppercase}
+.analogy-body{font-size:13.5px;color:var(--text);line-height:1.8}
+.steps{list-style:none}
+.steps li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;align-items:flex-start}
+.steps li:last-child{border-bottom:none}
+.step-n{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+.os-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:480px){.os-grid{grid-template-columns:1fr}}
+.os-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.os-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.os-method{font-size:12.5px;color:var(--text);line-height:1.65}
+.tip{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#86efac;display:flex;gap:10px;margin-bottom:16px;line-height:1.65}
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.4);border-radius:14px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{background:rgba(124,106,247,.25)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../setup.html">← セットアップガイドに戻る</a>
+
+  <div class="tag">用語解説</div>
+  <h1><em>ターミナル</em>とは？</h1>
+  <div class="sub">コマンドで操作する「テキスト版のFinderやエクスプローラー」</div>
+
+  <div class="analogy">
+    <div class="analogy-label">💡 たとえるなら</div>
+    <div class="analogy-body">
+      Finder（Mac）やエクスプローラー（Windows）は、フォルダをクリックして操作しますよね。<br>
+      <strong>ターミナルは同じことをテキストで操作する</strong>画面です。<br><br>
+      クリックの代わりに「<code>cd Documents</code>（Documentsに移動）」のように文字を打って操作します。<br>
+      Claude Code もここで起動して、会話形式で使います。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>あなたのOSでの開き方</h2>
+    <div class="os-grid">
+      <div class="os-card">
+        <div class="os-label">🪟 Windows</div>
+        <div class="os-method">
+          <strong>PowerShell</strong> を使います。<br><br>
+          ① スタートボタンを右クリック<br>
+          ② 「Windows PowerShell」または「ターミナル」を選択
+        </div>
+      </div>
+      <div class="os-card">
+        <div class="os-label">🍎 Mac</div>
+        <div class="os-method">
+          <strong>ターミナル</strong> を使います。<br><br>
+          ① Spotlight（⌘+Space）を開く<br>
+          ② 「ターミナル」と入力してEnter
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>知っておくと便利な基本操作</h2>
+    <ul class="steps">
+      <li><div class="step-n">1</div><div><code>claude</code> と入力してEnter → Claude Code が起動します</div></li>
+      <li><div class="step-n">2</div><div><code>↑</code> キー → 前に入力したコマンドを再呼び出しできます</div></li>
+      <li><div class="step-n">3</div><div><code>Ctrl + C</code> → 処理を中断・キャンセルします</div></li>
+      <li><div class="step-n">4</div><div><code>cls</code>（Windows）/ <code>clear</code>（Mac）→ 画面をリセットします</div></li>
+    </ul>
+  </div>
+
+  <div class="tip">
+    <span>✅</span>
+    <div>Claude Code は起動後は<strong>会話形式</strong>なので、ターミナルの操作を覚える必要はほとんどありません。<code>claude</code> と打って起動するだけでOKです。</div>
+  </div>
+
+  <a class="back-cta" href="../setup.html">← セットアップに戻って続ける</a>
+
+</div>
+</body>
+</html>

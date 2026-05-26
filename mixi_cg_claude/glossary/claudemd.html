@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAUDE.md とは？ — Claude Code 用語集</title>
+<style>
+:root{--bg:#0c0c10;--s1:#16161e;--s2:#1e1e28;--border:#2a2a38;--text:#e2e2ec;--muted:#6a6a88;--accent:#7c6af7;--accent2:#a78bfa;--green:#4ade80;--cyan:#22d3ee;--pink:#f472b6;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:36px;transition:color .2s}
+.back:hover{color:var(--accent2)}
+.tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.25);color:var(--accent2);margin-bottom:14px;text-transform:uppercase}
+h1{font-size:clamp(26px,5vw,40px);font-weight:900;line-height:1.15;margin-bottom:10px}
+h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:14px;color:var(--muted);margin-bottom:36px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px}
+h2{font-size:16px;font-weight:700;margin-bottom:10px}
+h3{font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+p{font-size:13.5px;color:var(--muted);line-height:1.8;margin-bottom:12px}
+p:last-child{margin-bottom:0}
+strong{color:var(--text)}
+.analogy{background:rgba(124,106,247,.06);border:1px solid rgba(124,106,247,.2);border-radius:14px;padding:20px;margin-bottom:16px}
+.analogy-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent2);margin-bottom:10px;text-transform:uppercase}
+.analogy-body{font-size:13.5px;color:var(--text);line-height:1.8}
+code{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.25);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:var(--accent2)}
+.cb{background:#070710;border:1px solid var(--border);border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:11.5px;line-height:1.8;margin:12px 0;overflow-x:auto}
+.cm{color:#6a9955}.ck{color:#4ade80}.cv{color:#e2e2ec}.cs{color:#93c5fd}
+.tip{border-radius:12px;padding:14px 16px;font-size:12.5px;display:flex;gap:10px;margin-bottom:14px;line-height:1.65}
+.tip-p{background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.22);color:#c4b5fd}
+.tip-g{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);color:#86efac}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px;background:var(--s2);border-radius:12px;margin-bottom:14px;font-size:12px}
+.flow-step{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.flow-arrow{color:var(--muted)}
+.back-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.4);border-radius:14px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600;transition:all .2s;margin-top:8px}
+.back-cta:hover{background:rgba(124,106,247,.25)}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(74,222,128,.15);color:var(--green);margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../setup.html">← セットアップガイドに戻る</a>
+
+  <div class="tag">用語解説</div>
+  <h1><em>CLAUDE.md</em> とは？</h1>
+  <div class="sub">Claude Code への「チーム説明書」——一度書けば毎回読んでくれる</div>
+
+  <div class="analogy">
+    <div class="analogy-label">💡 たとえるなら</div>
+    <div class="analogy-body">
+      新しいアルバイトスタッフに渡す「業務マニュアル」のようなものです。<br><br>
+      毎日「うちのチームはHoudiniを使っていて…」と説明するのは大変ですよね。<br>
+      <strong>CLAUDE.md に書いておけば、Claude は起動するたびにそれを読んで</strong>、<br>
+      あなたのチームの前提を把握した状態で会話を始めます。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>どう動くの？</h2>
+    <div class="flow">
+      <div class="flow-step">📁 プロジェクトフォルダで<br><code>claude</code> を起動</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">📄 <code>CLAUDE.md</code> を<br>自動で読み込む</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">💬 チームの前提を知った<br>状態で会話スタート</div>
+    </div>
+    <p>CLAUDE.md がなければ、Claude は「このフォルダが何のプロジェクトか」を毎回ゼロから理解しようとします。CLAUDE.md を置くだけで、初回からコンテキストが揃った状態になります。</p>
+  </div>
+
+  <div class="card">
+    <h2>テンプレート：コピペで使えます</h2>
+    <div class="cb">
+<span class="ck"># プロジェクト概要</span>
+<span class="cv">MIXI CG映像チームのプロジェクト。</span>
+<span class="cv">商業CG映像の制作を行っている。</span>
+
+<span class="ck"># 使用ツール</span>
+<span class="cv">- Houdini 20.5（シミュレーション・VFX）</span>
+<span class="cv">- Unreal Engine 5.4（リアルタイムレンダリング）</span>
+<span class="cv">- After Effects 2024（コンポジット）</span>
+<span class="cv">- Blender 4.x（モデリング補助）</span>
+
+<span class="ck"># チーム構成</span>
+<span class="cv">CG アーティスト × 2、ディレクター × 1</span>
+
+<span class="ck"># ファイル命名規則</span>
+<span class="cv">assets/[category]/[name]_[type]_v001.ext</span>
+<span class="cv">例: assets/textures/char_skin_diffuse_v001.png</span>
+
+<span class="ck"># 返答スタイルの希望</span>
+<span class="cv">- 専門用語には日本語の説明を必ず添えること</span>
+<span class="cv">- コードには使い方のコメントを入れること</span>
+<span class="cv">- 長い説明より、まず結論を先に書くこと</span></div>
+  </div>
+
+  <div class="card">
+    <h2>書けることの例</h2>
+    <h3>✅ 書くと効果的なこと</h3>
+    <p>プロジェクトの目的・使用ツールとバージョン・チーム構成・ファイル命名規則・よく使う用語の定義・返答スタイルの希望（箇条書きで、など）</p>
+    <h3>💡 役割別に複数作っても OK</h3>
+    <p>プロジェクトごとに CLAUDE.md を作成することで、フォルダを移動するだけで Claude の「人格」が切り替わります。</p>
+  </div>
+
+  <div class="tip tip-p">
+    <span>📌</span>
+    <div>CLAUDE.md は普通のテキストファイルです。メモ帳・VS Code・どんなエディタでも編集できます。Markdown 記法（<code># 見出し</code> や <code>- リスト</code>）が使えます。</div>
+  </div>
+
+  <div class="tip tip-g">
+    <span>✅</span>
+    <div>まず <strong>5 行</strong>だけ書いてみましょう。プロジェクト名・ツール名・チーム人数。それだけでも Claude の返答の質が大きく変わります。</div>
+  </div>
+
+  <a class="back-cta" href="../setup.html">← セットアップに戻って続ける</a>
+
+</div>
+</body>
+</html>
