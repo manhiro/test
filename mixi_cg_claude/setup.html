@@ -3,667 +3,894 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code はじめかた — MIXI CG映像チーム</title>
+<title>貼るだけ Claude Code — MIXI CG映像チーム</title>
 <style>
 :root{
-  --bg:#f5f5f7;--s1:#ffffff;--s2:#f9f9fb;--border:#e4e4e7;
-  --text:#1a1a2e;--muted:#71717a;--accent:#6d4aff;--accent2:#8b5cf6;
+  --bg:#f5f5f7;--s1:#fff;--s2:#f9f9fb;--border:#e4e4e7;
+  --text:#1a1a2e;--muted:#71717a;--accent:#6d4aff;--a2:#8b5cf6;
   --green:#16a34a;--cyan:#0891b2;--pink:#db2777;--yellow:#ca8a04;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.06);
-  --shadow:0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg:0 12px 40px rgba(0,0,0,.11);
+  --sh0:0 1px 3px rgba(0,0,0,.06);--sh1:0 4px 16px rgba(0,0,0,.08);--sh2:0 12px 40px rgba(0,0,0,.1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;overflow-x:hidden;line-height:1.7;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
 
-/* ── Progress ── */
-#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),#c084fc);z-index:400;width:0%;transition:width .06s linear}
+/* ── progress ── */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--a2),#c084fc);z-index:500;width:0%;transition:width .06s}
 
-/* ── Nav ── */
-nav{position:fixed;top:3px;left:0;right:0;z-index:300;background:rgba(255,255,255,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm)}
-.nav-logo{font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap;color:var(--text)}
+/* ── nav ── */
+nav{position:fixed;top:3px;left:0;right:0;z-index:400;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:9px 20px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh0)}
+.nav-logo{font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap}
 .nav-logo em{color:var(--accent);font-style:normal}
-.nav-steps{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
-.nav-steps::-webkit-scrollbar{display:none}
-.ns{padding:4px 10px;border-radius:10px;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .18s;text-decoration:none}
-.ns:hover,.ns.active{background:rgba(109,74,255,.1);color:var(--accent)}
-.nav-right{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
-.nav-btn{padding:5px 14px;border-radius:10px;font-size:11px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap}
-.nav-disc{background:var(--accent);color:#fff}
-.nav-disc:hover{opacity:.85}
-.nav-adv{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.nav-adv:hover{border-color:var(--accent);color:var(--accent)}
+.nav-pills{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;margin:0 8px}
+.nav-pills::-webkit-scrollbar{display:none}
+.np{padding:4px 10px;border-radius:8px;color:var(--muted);font-size:11px;text-decoration:none;transition:all .18s;white-space:nowrap}
+.np:hover,.np.on{background:rgba(109,74,255,.1);color:var(--accent)}
+.nav-r{display:flex;gap:6px;flex-shrink:0}
+.nbtn{padding:5px 13px;border-radius:9px;font-size:11px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap}
+.nbtn-p{background:var(--accent);color:#fff}.nbtn-p:hover{opacity:.85}
+.nbtn-s{background:transparent;border:1px solid var(--border);color:var(--muted)}.nbtn-s:hover{border-color:var(--accent);color:var(--accent)}
 
-/* ── Sections ── */
-section{padding:110px 20px 70px;max-width:900px;margin:0 auto}
-.div{height:1px;background:var(--border);max-width:900px;margin:0 auto}
+/* ── sections ── */
+section{padding:110px 20px 64px;max-width:920px;margin:0 auto}
+.div{height:1px;background:var(--border);max-width:920px;margin:0 auto}
 
-/* ── Reveal ── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
-.reveal.shown{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.25s}
-.d4{transition-delay:.34s}.d5{transition-delay:.43s}
+/* ── reveal ── */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.07s}.d2{transition-delay:.15s}.d3{transition-delay:.23s}.d4{transition-delay:.31s}
 
-/* ── Typography ── */
-.ch-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.ch-label::before{content:'';width:20px;height:2px;background:var(--accent);display:inline-block}
-h1{font-size:clamp(30px,6vw,58px);font-weight:900;line-height:1.08;letter-spacing:-.025em;margin-bottom:18px}
-h2{font-size:clamp(24px,4vw,40px);font-weight:800;line-height:1.18;margin-bottom:14px}
-h3{font-size:16px;font-weight:700;margin-bottom:8px}
-.lead{font-size:clamp(14px,1.8vw,16px);color:var(--muted);line-height:1.8;margin-bottom:28px;max-width:580px}
+/* ── type ── */
+.sec-tag{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-tag::before{content:'';width:18px;height:2px;background:var(--accent);display:inline-block}
+h1{font-size:clamp(28px,5.5vw,54px);font-weight:900;line-height:1.1;letter-spacing:-.025em;margin-bottom:14px}
+h2{font-size:clamp(22px,3.5vw,36px);font-weight:800;line-height:1.2;margin-bottom:12px}
+h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.lead{font-size:clamp(13px,1.7vw,15px);color:var(--muted);line-height:1.8;margin-bottom:26px;max-width:560px}
 .grad{background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.grad-p{background:linear-gradient(135deg,var(--pink),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-/* ── Inline code ── */
-code{background:#ede9fe;border-radius:5px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.85em;color:#5b21b6}
+/* ── inline code ── */
+code{background:#ede9fe;border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.84em;color:#5b21b6}
 
-/* ── Card ── */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
-.card:hover{box-shadow:var(--shadow)}
+/* ── install steps ── */
+.install-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+@media(max-width:560px){.install-row{grid-template-columns:1fr}}
+.install-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--sh0)}
+.install-num{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.06em;margin-bottom:6px}
+.install-title{font-size:13px;font-weight:700;margin-bottom:6px}
+.install-desc{font-size:12px;color:var(--muted);line-height:1.65}
+.install-cmd{font-size:11px;font-family:'JetBrains Mono','Fira Code',monospace;background:#ede9fe;border-radius:6px;padding:5px 9px;margin-top:8px;color:#5b21b6;display:flex;align-items:center;justify-content:space-between;gap:8px;word-break:break-all}
 
-/* ── Step card ── */
-.sc{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px;position:relative;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
-.sc:hover{box-shadow:var(--shadow)}
-.sc-num{position:absolute;top:-13px;left:22px;font-size:10px;font-weight:800;padding:3px 14px;border-radius:20px;letter-spacing:.06em;background:var(--accent);color:#fff}
+/* ── PROMPT CARD — the main component ── */
+.pc{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:var(--sh0);transition:box-shadow .2s}
+.pc:hover{box-shadow:var(--sh1)}
+.pc-head{padding:18px 20px 14px;display:flex;align-items:flex-start;gap:14px}
+.pc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.pc-meta{flex:1;min-width:0}
+.pc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.04em;white-space:nowrap}
+.tag-once{background:#d1fae5;color:#065f46}
+.tag-daily{background:#dbeafe;color:#1e40af}
+.tag-cg{background:#ede9fe;color:#5b21b6}
+.tag-design{background:#fce7f3;color:#9d174d}
+.tag-dir{background:#e0f2fe;color:#075985}
+.tag-tool{background:#fef9c3;color:#854d0e}
+.pc-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
+.pc-what{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.6}
 
-/* ── Code block ── */
-.cb{background:#1a1a2e;border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;color:#93c5fd;position:relative;overflow-x:auto;margin-bottom:12px;line-height:1.7}
-.cb .pr{color:#4b5563;margin-right:4px;user-select:none}
-.cb.light{background:var(--s2);border:1px solid var(--border);color:#374151}
-.cb.light .pr{color:#9ca3af}
-.cp{position:absolute;top:10px;right:10px;padding:4px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:7px;color:rgba(255,255,255,.7);font-size:10px;cursor:pointer;transition:all .2s;font-family:inherit}
-.cp:hover{background:rgba(255,255,255,.22)}
-.cp.ok{background:rgba(74,222,128,.25);border-color:rgba(74,222,128,.4);color:#4ade80}
+.pc-body{padding:0 20px 18px}
+.pc-result{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;font-size:11.5px;color:#166534;margin-bottom:12px;line-height:1.65}
+.pc-result::before{content:'▶ Claudeがやること　';font-weight:700}
 
-/* ── OS Toggle ── */
-.os-row{display:flex;gap:6px;margin-bottom:16px}
-.os-btn{padding:5px 16px;border-radius:10px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:inherit;box-shadow:var(--shadow-sm)}
+/* prompt textarea */
+.pc-prompt{position:relative}
+.pc-text{width:100%;background:#1a1a2e;border-radius:12px;padding:16px 18px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:11.5px;color:#e2e8f0;line-height:1.75;border:none;outline:none;resize:none;cursor:text;min-height:120px;-webkit-font-smoothing:antialiased}
+.pc-text.expanded{min-height:auto}
+.copy-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.copy-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.copy-btn:hover{opacity:.85;transform:translateY(-1px)}
+.copy-btn.ok{background:var(--green)}
+.expand-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pc-tip{font-size:11.5px;color:var(--muted);margin-top:10px;padding:10px 14px;background:var(--s2);border-radius:9px;line-height:1.65}
+.pc-tip::before{content:'💡 ';font-style:normal}
+
+/* ── role tabs ── */
+.rtabs{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.rb{padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:600;box-shadow:var(--sh0)}
+.rb[data-r="d"].on{background:#fdf2f8;border-color:var(--pink);color:var(--pink)}
+.rb[data-r="m"].on{background:#eff6ff;border-color:var(--cyan);color:var(--cyan)}
+.rb[data-r="c"].on{background:#f5f3ff;border-color:var(--a2);color:var(--a2)}
+.rc{display:none}.rc.on{display:block}
+
+/* ── install OS toggle ── */
+.os-row{display:flex;gap:6px;margin-bottom:14px}
+.os-btn{padding:5px 14px;border-radius:9px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:inherit;box-shadow:var(--sh0)}
 .os-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .os-win{display:block}.os-mac{display:none}
 
-/* ── Alert boxes ── */
-.tip{border-radius:12px;padding:13px 16px;font-size:13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;line-height:1.7}
-.tip-p{background:#f5f3ff;border:1px solid #ddd6fe;color:#5b21b6}
+/* ── tips box ── */
+.tip{border-radius:11px;padding:12px 15px;font-size:12.5px;display:flex;gap:9px;align-items:flex-start;margin-bottom:12px;line-height:1.7}
 .tip-g{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
 .tip-y{background:#fffbeb;border:1px solid #fed7aa;color:#92400e}
-.tip-r{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
-.tip-b{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
-.ti{font-size:15px;flex-shrink:0;margin-top:1px}
+.tip-p{background:#f5f3ff;border:1px solid #ddd6fe;color:#5b21b6}
 
-/* ── Chips ── */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
-.chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;animation:fl 3s ease-in-out infinite}
+/* ── CTA buttons ── */
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;background:var(--accent);border-radius:14px;color:#fff;font-size:14px;font-weight:700;text-decoration:none;transition:all .25s;box-shadow:0 4px 14px rgba(109,74,255,.3)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(109,74,255,.4)}
+.btn-s{display:inline-flex;align-items:center;gap:6px;padding:12px 20px;background:var(--s1);border:1px solid var(--border);border-radius:14px;color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:var(--sh0)}
+.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── scroll hint ── */
+.sh{color:#a1a1aa;font-size:11px;margin-top:28px;animation:bo 2s ease-in-out infinite}
+@keyframes bo{0%,100%{transform:translateY(0)}55%{transform:translateY(5px)}}
+
+/* ── chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:28px}
+.chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;animation:fl 3s ease-in-out infinite}
 .chip:nth-child(2n){animation-delay:.4s}.chip:nth-child(3n){animation-delay:.8s}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-/* ── CTA ── */
-.btn-p{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:var(--accent);border-radius:14px;color:#fff;font-size:14px;font-weight:700;text-decoration:none;transition:all .25s;box-shadow:0 4px 14px rgba(109,74,255,.35)}
-.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(109,74,255,.45)}
-.btn-s{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--s1);border:1px solid var(--border);border-radius:14px;color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:var(--shadow-sm)}
-.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+/* ── next cards ── */
+.ng{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:20px}
+.nc{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;text-decoration:none;display:block;transition:all .22s;box-shadow:var(--sh0)}
+.nc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--sh1)}
+.nc-icon{font-size:24px;margin-bottom:8px}
+.nc-title{font-size:12.5px;font-weight:700;margin-bottom:5px;color:var(--text)}
+.nc-desc{font-size:11px;color:var(--muted);line-height:1.55}
+.nc.feat{border-color:var(--accent);background:linear-gradient(135deg,#f5f3ff,#eff6ff)}
 
-/* ── Search ── */
-.search-wrap{max-width:560px;position:relative;margin-bottom:40px}
-.search-input{width:100%;padding:13px 18px 13px 46px;background:var(--s1);border:1px solid var(--border);border-radius:14px;font-size:14px;font-family:inherit;color:var(--text);outline:none;box-shadow:var(--shadow-sm);transition:all .2s}
-.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(109,74,255,.12)}
-.search-input::placeholder{color:#a1a1aa}
-.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#a1a1aa;font-size:15px;pointer-events:none}
-.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--s1);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);z-index:200;display:none;max-height:380px;overflow-y:auto}
-.search-results.open{display:block}
-.sr-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;cursor:pointer;transition:background .15s;text-decoration:none;color:inherit}
-.sr-item:hover{background:var(--s2)}
-.sr-item+.sr-item{border-top:1px solid var(--border)}
-.sr-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap;flex-shrink:0;margin-top:3px;letter-spacing:.04em}
-.sr-b-term{background:#ede9fe;color:#6d28d9}
-.sr-b-tips{background:#f0fdf4;color:#166534}
-.sr-b-link{background:#eff6ff;color:#1e40af}
-.sr-b-sec{background:#fef9c3;color:#854d0e}
-.sr-content{flex:1;min-width:0}
-.sr-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
-.sr-desc{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sr-empty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+/* ── badge ── */
+.badge{display:inline-block;padding:4px 13px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:#ede9fe;border:1px solid #ddd6fe;color:var(--accent);margin-bottom:14px;text-transform:uppercase}
 
-/* ── Role tabs ── */
-.role-tabs{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
-.rb{padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:600;box-shadow:var(--shadow-sm)}
-.rb[data-r="designer"].on{background:#fdf2f8;border-color:var(--pink);color:var(--pink)}
-.rb[data-r="director"].on{background:#eff6ff;border-color:var(--cyan);color:var(--cyan)}
-.rb[data-r="cg"].on{background:#f5f3ff;border-color:var(--accent2);color:var(--accent2)}
-.rc{display:none}.rc.on{display:block}
-
-/* ── Card grid ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
-.gc{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;transition:all .2s;box-shadow:var(--shadow-sm)}
-.gc:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
-.gc-icon{font-size:26px;margin-bottom:10px}
-.gc-title{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text)}
-.gc-desc{font-size:12px;color:var(--muted);line-height:1.65}
-.gc-prompt{font-size:11px;font-family:'JetBrains Mono','Fira Code',monospace;color:#5b21b6;background:#f5f3ff;border:1px solid #ede9fe;border-radius:8px;padding:9px 11px;margin-top:10px;line-height:1.6;word-break:break-all}
-
-/* ── Tips section ── */
-.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:16px}
-.tip-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
-.tip-card:hover{box-shadow:var(--shadow)}
-.tip-cat{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;padding:3px 10px;border-radius:6px;display:inline-block}
-.tip-items{list-style:none;display:flex;flex-direction:column;gap:10px}
-.tip-items li{font-size:12.5px;color:var(--muted);line-height:1.65;padding-left:16px;position:relative}
-.tip-items li::before{content:'›';position:absolute;left:0;color:var(--accent);font-weight:700}
-.tip-items strong{color:var(--text)}
-.tip-cb{font-size:11px;font-family:'JetBrains Mono','Fira Code',monospace;background:#f5f3ff;border:1px solid #ede9fe;border-radius:6px;padding:4px 8px;color:#5b21b6;display:inline-block;margin-top:3px}
-
-/* ── Auth grid ── */
-.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-@media(max-width:500px){.auth-grid{grid-template-columns:1fr}}
-
-/* ── Table ── */
-.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
-.tbl th{padding:11px 16px;text-align:left;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.05em;background:var(--s2);border-bottom:1px solid var(--border)}
-.tbl td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--muted)}
-.tbl tr:last-child td{border-bottom:none}
-
-/* ── Checklist ── */
-.cl{list-style:none}
-.cl li{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
-.cl li:last-child{border-bottom:none}
-.ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:10px}
-.ck.done{background:var(--green);border-color:var(--green);color:#fff}
-
-/* ── Next grid ── */
-.next-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:24px}
-.nc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:20px;text-decoration:none;transition:all .22s;display:block;box-shadow:var(--shadow-sm)}
-.nc:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:var(--shadow)}
-.nc-icon{font-size:28px;margin-bottom:10px}
-.nc-title{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text)}
-.nc-desc{font-size:11.5px;color:var(--muted);line-height:1.55}
-.nc.featured{border-color:var(--accent);background:linear-gradient(135deg,#f5f3ff,#eff6ff)}
-
-/* ── Scroll hint ── */
-.scroll-hint{display:flex;flex-direction:column;align-items:flex-start;gap:4px;color:#a1a1aa;font-size:11px;margin-top:32px;animation:bo 2.2s ease-in-out infinite}
-@keyframes bo{0%,100%{transform:translateY(0)}55%{transform:translateY(5px)}}
-
-/* ── Badge ── */
-.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;background:#ede9fe;border:1px solid #ddd6fe;color:var(--accent);margin-bottom:16px;text-transform:uppercase}
-.badge-new{background:#d1fae5;border-color:#a7f3d0;color:var(--green)}
-
-/* ── Term link ── */
-.term{display:inline-flex;align-items:center;gap:2px;color:var(--accent);text-decoration:none;border-bottom:1px dashed rgba(109,74,255,.4);padding-bottom:1px;font-size:.95em;transition:border-color .2s}
-.term:hover{border-color:var(--accent)}
-.term sup{font-size:9px;background:#ede9fe;border:1px solid #ddd6fe;border-radius:3px;padding:0 4px;margin-left:2px;color:var(--accent);font-style:normal;line-height:1.6}
-
-/* ── Flow diagram ── */
-.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px;background:var(--s2);border-radius:12px;margin-bottom:14px}
-.flow-step{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;white-space:nowrap;box-shadow:var(--shadow-sm)}
-.flow-arrow{color:#a1a1aa;font-weight:300}
-
-/* ── Footer ── */
-footer{text-align:center;padding:44px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);background:var(--s1)}
+footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);background:var(--s1)}
 footer a{color:var(--accent);text-decoration:none}
-
-@media(max-width:620px){
-  section{padding:90px 16px 50px}
-  .grid,.tips-grid{grid-template-columns:1fr}
-  .auth-grid{grid-template-columns:1fr}
-  .nav-adv{display:none}
-}
+@media(max-width:600px){section{padding:90px 16px 48px}}
 </style>
 </head>
 <body>
-
 <div id="prog"></div>
 
 <nav>
   <div class="nav-logo">MIXI CG <em>×</em> Claude Code</div>
-  <div class="nav-steps">
-    <a class="ns" href="#what">Claudeとは</a>
-    <a class="ns" href="#setup">セットアップ</a>
-    <a class="ns" href="#first">最初の一歩</a>
-    <a class="ns" href="#roles">役割別</a>
-    <a class="ns" href="#tips">Tips</a>
-    <a class="ns" href="#customize">設定</a>
-    <a class="ns" href="#next">次へ</a>
+  <div class="nav-pills">
+    <a class="np" href="#install">インストール</a>
+    <a class="np" href="#first">初回だけ</a>
+    <a class="np" href="#daily">毎日使う</a>
+    <a class="np" href="#role">役割別</a>
+    <a class="np" href="#trouble">困ったとき</a>
   </div>
-  <div class="nav-right">
-    <a class="nav-btn nav-adv" href="advanced.html">効率化ガイド</a>
-    <a class="nav-btn nav-disc" href="discovery.html">機能一覧</a>
+  <div class="nav-r">
+    <a class="nbtn nbtn-s" href="advanced.html">効率化</a>
+    <a class="nbtn nbtn-s" href="integrations.html">連携</a>
+    <a class="nbtn nbtn-p" href="discovery.html">機能一覧</a>
   </div>
 </nav>
 
 <!-- ════ HERO ════ -->
 <section id="hero" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center">
-  <div class="reveal">
-    <div class="badge">MIXI CG映像チーム向け完全ガイド</div>
-    <h1>Claude Code を<br><span class="grad">はじめよう</span></h1>
-    <p class="lead">コードを書かなくていい。難しくない。<br>このページをスクロールするだけで、10分後には使えるようになります。</p>
+  <div class="rv">
+    <div class="badge">MIXI CG映像チーム — コピペで使えるプロンプト集</div>
+    <h1>貼るだけで、<br>Claude が<span class="grad">全部やってくれる</span></h1>
+    <p class="lead">操作方法を覚えなくていい。プロンプトをコピーして Claude に貼り付けるだけ。<br>セットアップも、ファイル作成も、ドキュメント化も — Claude に任せましょう。</p>
   </div>
 
-  <div class="chips reveal d1">
-    <span class="chip" style="background:#fdf2f8;border-color:#f9a8d4;color:var(--pink)">🎨 デザイナー</span>
-    <span class="chip" style="background:#eff6ff;border-color:#93c5fd;color:var(--cyan)">🎬 ディレクター</span>
-    <span class="chip" style="background:#f5f3ff;border-color:#c4b5fd;color:var(--accent2)">✨ CGアーティスト</span>
-    <span class="chip" style="background:#f0fdf4;border-color:#86efac;color:var(--green)">📁 ファイル整理</span>
-    <span class="chip" style="background:#fffbeb;border-color:#fcd34d;color:var(--yellow)">📝 ドキュメント自動化</span>
-    <span class="chip" style="background:#ede9fe;border-color:#c4b5fd;color:var(--accent)">⚡ スクリプト生成</span>
-    <span class="chip" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626">🔧 VEX / Python</span>
+  <div class="chips rv d1">
+    <span class="chip" style="background:#f0fdf4;border-color:#86efac;color:var(--green)">🚀 初回セットアップを自動化</span>
+    <span class="chip" style="background:#eff6ff;border-color:#93c5fd;color:var(--cyan)">📁 プロジェクト管理を Claude に</span>
+    <span class="chip" style="background:#fdf2f8;border-color:#f9a8d4;color:var(--pink)">🎨 デザイン仕様書を自動生成</span>
+    <span class="chip" style="background:#f5f3ff;border-color:#c4b5fd;color:var(--a2)">⚡ VEX / Python を会話で書く</span>
+    <span class="chip" style="background:#fffbeb;border-color:#fcd34d;color:var(--yellow)">📋 週報・議事録を自動まとめ</span>
   </div>
 
-  <!-- Search bar -->
-  <div class="search-wrap reveal d2">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" type="text" placeholder="セットアップ手順・用語・使い方を検索..." id="searchInput" autocomplete="off">
-    <div class="search-results" id="searchResults"></div>
+  <div class="rv d2" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+    <a class="btn-p" href="#first">プロンプトを使い始める ↓</a>
+    <a class="btn-s" href="#install">まずインストールする</a>
   </div>
 
-  <div class="reveal d2" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
-    <a class="btn-p" href="#what">ガイドをはじめる ↓</a>
-    <a class="btn-s" href="advanced.html">🚀 効率化セットアップ</a>
-    <a class="btn-s" href="integrations.html">🔗 社内ツール連携</a>
-  </div>
-
-  <div class="scroll-hint reveal d3"><span>↓ スクロールして学ぶ</span></div>
+  <div class="sh rv d3">↓ スクロールして始める</div>
 </section>
 
 <div class="div"></div>
 
-<!-- ════ 01: WHAT ════ -->
-<section id="what">
-  <div class="ch-label reveal">Section 01</div>
-  <h2 class="reveal">Claude Code って<br>何ができるの？</h2>
-  <p class="lead reveal d1">AIに日本語で話しかけるだけで、面倒な作業を肩代わりしてくれるツールです。プログラミングの知識はいりません。</p>
-  <div class="grid reveal d2">
-    <div class="gc"><div class="gc-icon">📁</div><div class="gc-title">フォルダを丸ごと理解</div><div class="gc-desc">プロジェクト全体を読んで、何がどこにあるか把握。整理・リネームの提案まで。</div></div>
-    <div class="gc"><div class="gc-icon">📝</div><div class="gc-title">ドキュメントを自動作成</div><div class="gc-desc">シーン設定・シェーダー仕様・作業ログを、そのまま読みやすい文書に変換。</div></div>
-    <div class="gc"><div class="gc-icon">⚙️</div><div class="gc-title">スクリプトを生成・修正</div><div class="gc-desc">「こういう処理をしたい」と伝えるだけでVEX・Python・MELを書いてくれる。</div></div>
-    <div class="gc"><div class="gc-icon">🔍</div><div class="gc-title">技術調査・まとめ</div><div class="gc-desc">Blender / UE5 の新機能やベストプラクティスを調べ、チーム向けにまとめる。</div></div>
-    <div class="gc"><div class="gc-icon">🔁</div><div class="gc-title">繰り返し作業を自動化</div><div class="gc-desc">毎週同じ形式のレポート、アセットのチェック作業——一度設定すれば後は任せるだけ。</div></div>
-    <div class="gc"><div class="gc-icon">💬</div><div class="gc-title">会話しながら作業</div><div class="gc-desc">「もう少しシンプルに」「英語でも書いて」と追加指示も自然な日本語でOK。</div></div>
-  </div>
-  <div class="tip tip-p reveal d3" style="margin-top:24px">
-    <span class="ti">💡</span>
-    <div>Claude Code は<a href="glossary/terminal.html" class="term" target="_blank">ターミナル<sup>?</sup></a>（黒い画面）で動きますが、操作は会話形式です。コマンドをほとんど覚える必要はありません。</div>
-  </div>
-</section>
+<!-- ════ INSTALL ════ -->
+<section id="install">
+  <div class="sec-tag rv">準備</div>
+  <h2 class="rv">Claude Code を使えるようにする<br><span style="font-size:.75em;font-weight:600;color:var(--muted)">— 最初の1回だけ、10分で完了</span></h2>
 
-<div class="div"></div>
-
-<!-- ════ 02: SETUP ════ -->
-<section id="setup">
-  <div class="ch-label reveal">Section 02</div>
-  <h2 class="reveal"><span class="grad">3ステップ</span>で<br>セットアップ完了</h2>
-  <p class="lead reveal d1">Windows でも Mac でも同じ手順です。所要時間：約 10 分。</p>
-  <div class="os-row reveal d1">
+  <div class="os-row rv d1">
     <button class="os-btn on" onclick="setOS('win',this)">🪟 Windows</button>
     <button class="os-btn" onclick="setOS('mac',this)">🍎 Mac</button>
   </div>
 
-  <div class="sc reveal d2">
-    <div class="sc-num">Step 1 — Node.js をインストール</div>
-    <p style="font-size:13px;color:var(--muted);margin:10px 0 14px">Claude Code を動かすために必要なソフトウェアです。<a href="glossary/nodejs.html" class="term" target="_blank">Node.js とは？<sup>?</sup></a></p>
-    <div class="tip tip-y"><span class="ti">🌐</span><div><strong>nodejs.org</strong> にアクセスして <strong>LTS（推奨版）</strong> をダウンロード→インストール。「次へ」を押し続けるだけでOKです。</div></div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">インストール後、ターミナルで確認：</p>
-    <div class="cb"><button class="cp" onclick="doCopy(this,'node --version')">コピー</button><span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> node --version</div>
-    <div class="tip tip-g"><span class="ti">✅</span><div><code>v18.x.x</code> 以上が表示されれば成功です。</div></div>
-  </div>
-
-  <div class="sc reveal d3">
-    <div class="sc-num">Step 2 — Claude Code をインストール</div>
-    <p style="font-size:13px;color:var(--muted);margin:10px 0 14px">ターミナルで以下を実行します。コピーボタンで貼り付けるだけ。</p>
-    <div class="cb"><button class="cp" onclick="doCopy(this,'npm install -g @anthropic-ai/claude-code')">コピー</button><span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> npm install -g @anthropic-ai/claude-code</div>
-    <div class="tip tip-y"><span class="ti">⚠️</span><div>エラーが出た場合、会社のプロキシ設定が必要な場合があります。情シスに確認してみてください。</div></div>
-    <div class="cb"><button class="cp" onclick="doCopy(this,'claude --version')">コピー</button><span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> claude --version</div>
-    <div class="tip tip-g"><span class="ti">✅</span><div>バージョン番号が表示されれば成功です。</div></div>
-  </div>
-
-  <div class="sc reveal">
-    <div class="sc-num">Step 3 — 認証する</div>
-    <p style="font-size:13px;color:var(--muted);margin:10px 0 14px">2 つの方法があります。<a href="glossary/apikey.html" class="term" target="_blank">APIキーとは？<sup>?</sup></a></p>
-    <div class="auth-grid">
-      <div style="background:#f0fdf4;border:2px solid #86efac;border-radius:14px;padding:18px">
-        <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-bottom:8px">★ おすすめ</div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:6px">claude.ai Pro/Max プラン</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.65">ブラウザでログインするだけ。APIキー不要で最も簡単。</div>
-      </div>
-      <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:18px">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:8px">API KEY</div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:6px">APIキーで認証</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.65">従量課金型。console.anthropic.com でキーを発行。</div>
-      </div>
+  <div class="install-row rv d2">
+    <div class="install-card">
+      <div class="install-num">STEP 1</div>
+      <div class="install-title">Node.js をインストール</div>
+      <div class="install-desc"><strong>nodejs.org</strong> から LTS 版をダウンロードして「次へ」を押し続けるだけ。</div>
+      <div class="install-cmd"><span>node --version</span><button onclick="doCopy(this,'node --version')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent)">コピー</button></div>
     </div>
-    <div class="cb"><button class="cp" onclick="doCopy(this,'claude')">コピー</button><span class="pr os-win">PS&gt;</span><span class="pr os-mac">$</span> claude</div>
-    <div class="tip tip-g"><span class="ti">✅</span><div>ブラウザが開いてログイン画面が表示されます。claude.ai アカウントでログインすれば完了です。</div></div>
+    <div class="install-card">
+      <div class="install-num">STEP 2</div>
+      <div class="install-title">Claude Code をインストール</div>
+      <div class="install-desc">ターミナルを開いて以下を貼り付けてEnter。</div>
+      <div class="install-cmd os-win"><span style="font-size:10px">npm install -g @anthropic-ai/claude-code</span><button onclick="doCopy(this,'npm install -g @anthropic-ai/claude-code')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+      <div class="install-cmd os-mac"><span style="font-size:10px">npm install -g @anthropic-ai/claude-code</span><button onclick="doCopy(this,'npm install -g @anthropic-ai/claude-code')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);flex-shrink:0">コピー</button></div>
+    </div>
+    <div class="install-card">
+      <div class="install-num">STEP 3</div>
+      <div class="install-title">起動 → ブラウザでログイン</div>
+      <div class="install-desc">以下を実行するとブラウザが開きます。claude.ai アカウントでログイン。</div>
+      <div class="install-cmd"><span>claude</span><button onclick="doCopy(this,'claude')" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent)">コピー</button></div>
+    </div>
+  </div>
+
+  <div class="tip tip-g rv d3" style="margin-top:16px">
+    <span>✅</span>
+    <div>ログインして <code>Claude></code> というプロンプトが表示されたら準備完了。あとは下のプロンプトを貼り付けるだけです。</div>
   </div>
 </section>
 
 <div class="div"></div>
 
-<!-- ════ 03: FIRST ════ -->
+<!-- ════ FIRST — 初回だけ ════ -->
 <section id="first">
-  <div class="ch-label reveal">Section 03</div>
-  <h2 class="reveal">最初の<span class="grad">プロンプト</span>を<br>入力してみよう</h2>
-  <p class="lead reveal d1"><a href="glossary/prompt.html" class="term" target="_blank">プロンプト<sup>?</sup></a>とは AI への指示文のこと。日本語で自然に話しかけて OK です。</p>
-  <div class="sc reveal d2">
-    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">作業したいフォルダで起動：</p>
-    <div class="cb os-win"><button class="cp" onclick="doCopy(this,'cd C:\\Users\\YourName\\Documents\\MyProject\nclause')">コピー</button><span class="pr">PS&gt;</span> cd C:\Users\YourName\Documents\MyProject<br><span class="pr">PS&gt;</span> claude</div>
-    <div class="cb os-mac"><button class="cp" onclick="doCopy(this,'cd ~/Documents/MyProject\nclaude')">コピー</button><span class="pr">$</span> cd ~/Documents/MyProject<br><span class="pr">$</span> claude</div>
-    <p style="font-size:12px;color:var(--muted);margin-top:14px;margin-bottom:8px">起動したら日本語で話しかけるだけ：</p>
-    <div class="cb"><span style="color:#6b7280">You › </span><span style="color:#e2e8f0">このフォルダの構成を説明してください</span></div>
-    <div class="cb" style="color:#86efac"><span style="color:#6b7280">Claude › </span>このプロジェクトには以下のファイルが含まれています…</div>
-    <div class="tip tip-p" style="margin-top:14px;margin-bottom:0"><span class="ti">💡</span><div>終了は <code>/exit</code> または <strong>Ctrl+C</strong> を押してください。</div></div>
+  <div class="sec-tag rv">初回だけ実行する</div>
+  <h2 class="rv">最初にこれを貼ると、<br>Claude が環境を整えてくれる</h2>
+  <p class="lead rv d1">以下のプロンプトを Claude に貼り付けると、Claude が質問しながらあなた専用の環境を作ります。設定ファイルも、フォルダも、コマンドも — 全部 Claude が作ってくれます。</p>
+
+  <!-- Prompt 1: 環境セットアップ -->
+  <div class="pc rv d2">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">🚀</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-once">初回1回だけ</span></div>
+        <div class="pc-title">環境セットアップウィザード</div>
+        <div class="pc-what">Claude が質問しながら、あなた専用の環境を丸ごとセットアップしてくれます</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">① 役割・使用ツール・作業フォルダを聞いてくれる → ② グローバル設定ファイル（CLAUDE.md）を作成 → ③ 役割に合ったコマンドを3つ自動生成 → ④ 「今日は何をしますか？」で終了</div>
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="p1" readonly rows="14">はじめまして！Claude Code を使い始めるので、私の環境をセットアップしてください。
+
+【手順】
+以下の質問を1つずつしてください（全部まとめて聞かないこと）：
+① 名前またはニックネームを教えてください
+② 役割を選んでください：A) デザイナー  B) ディレクター  C) CGアーティスト  D) その他
+③ よく使うソフトを教えてください（例：Houdini, Blender, UE5, After Effects, Figma）
+④ メインの作業フォルダのパスを教えてください（例：C:\Users\名前\Projects）
+
+全員の回答が揃ったら、以下を実行してください：
+1. グローバル設定ファイル（~/.claude/CLAUDE.md）を作成する
+   - 名前・役割・ツール・作業フォルダ・返答スタイルの希望を含める
+2. 役割に合ったスラッシュコマンドを ~/.claude/commands/ フォルダに3つ作成する
+3. 「✅ セットアップ完了！今日は何をしますか？」と聞く</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'p1')">📋 コピーして Claude に貼り付ける</button>
+          <button class="expand-btn" onclick="expandText('p1')">全文表示</button>
+        </div>
+      </div>
+      <div class="pc-tip">貼り付けた後は Claude の質問に答えるだけ。設定ファイルの作成場所や内容はすべて Claude が決めてくれます。</div>
+    </div>
   </div>
-  <h3 class="reveal" style="margin-top:32px;margin-bottom:14px">コピペで使えるプロンプト例</h3>
-  <div class="grid reveal d1">
-    <div class="gc"><div class="gc-icon">📋</div><div class="gc-title">フォルダ確認</div><div class="gc-prompt">このプロジェクトのファイル構成を整理して、何がどこにあるか一覧にしてください</div></div>
-    <div class="gc"><div class="gc-icon">✏️</div><div class="gc-title">引き継ぎ資料作成</div><div class="gc-prompt">このフォルダの内容をもとに、チーム向けの引き継ぎドキュメントを作成してください</div></div>
-    <div class="gc"><div class="gc-icon">🔍</div><div class="gc-title">コードの解説</div><div class="gc-prompt">このスクリプトが何をしているか、CG制作者向けにわかりやすく説明してください</div></div>
-    <div class="gc"><div class="gc-icon">📊</div><div class="gc-title">作業まとめ</div><div class="gc-prompt">このフォルダ内のメモを読んで、今週の作業内容をプロジェクト日誌形式でまとめてください</div></div>
+
+  <!-- Prompt 2: CLAUDE.md 自動生成 -->
+  <div class="pc rv d3">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">📄</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-once">プロジェクト開始時</span><span class="tag tag-tool">CLAUDE.md</span></div>
+        <div class="pc-title">プロジェクト設定ファイルを自動生成</div>
+        <div class="pc-what">Claude が質問して、そのプロジェクト専用の CLAUDE.md を作ってくれます</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">① 6つの質問に答える → ② CLAUDE.md の内容を提案 → ③ 確認・修正 → ④ 保存。次回からこのフォルダで起動すると Claude が内容を覚えた状態でスタート</div>
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="p2" readonly rows="14">このプロジェクト専用の CLAUDE.md を作成してください。
+
+以下を1つずつ質問してください：
+① プロジェクト名と概要（1〜2行）
+② 使用ツールとバージョン（例：Houdini 20.5, UE5.4）
+③ チーム構成（役割と人数）
+④ ファイルの命名規則（あれば。例：asset_type_v001.ext）
+⑤ 作業上のルール・注意点（あれば）
+⑥ Claude への希望（例：「返答は短く」「専門用語に説明を添えて」）
+
+全部聞き終えたら CLAUDE.md の内容を提案してください。
+「OK」なら現在のフォルダに保存、修正があれば対応してください。</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'p2')">📋 コピーして Claude に貼り付ける</button>
+          <button class="expand-btn" onclick="expandText('p2')">全文表示</button>
+        </div>
+      </div>
+      <div class="pc-tip">このプロンプトは作業フォルダで Claude を起動してから使ってください。そのフォルダに CLAUDE.md が作られます。</div>
+    </div>
+  </div>
+
+</section>
+
+<div class="div"></div>
+
+<!-- ════ DAILY ════ -->
+<section id="daily">
+  <div class="sec-tag rv">毎日使う</div>
+  <h2 class="rv">毎回のセッションを<br>このプロンプトで始める</h2>
+  <p class="lead rv d1">Claude を起動したら、まずこれを貼り付けましょう。前回の続きから再開できます。</p>
+
+  <!-- Prompt 3: プロジェクト開始ウィザード -->
+  <div class="pc rv d2">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">📁</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-daily">毎日使う</span></div>
+        <div class="pc-title">プロジェクト開始ウィザード</div>
+        <div class="pc-what">新規 or 既存を選ぶだけで、Claude がプロジェクト管理を全部やってくれる</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">新規 → フォルダ作成・CLAUDE.md 生成・ディレクトリ構成を提案 ／ 既存 → プロジェクト一覧表示・前回の状況を要約して報告</div>
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="p3" readonly rows="20">作業を始めます。以下の手順で進めてください。
+
+まず「新規プロジェクト」と「既存プロジェクトの続き」のどちらか選択肢を出してください。
+
+▼ 新規プロジェクトの場合
+1. プロジェクト名を聞く
+2. 目的・使用ツール・期日を聞く
+3. CLAUDE.md に記録した作業フォルダに新しいフォルダを作成する
+4. 以下の基本フォルダ構成を作成する：
+   assets/ docs/ scripts/ references/ output/
+5. CLAUDE.md をそのフォルダに自動生成して保存する
+6. 「✅ プロジェクト作成完了！何から始めますか？」と聞く
+
+▼ 既存プロジェクトの続きの場合
+1. 作業フォルダにあるプロジェクト一覧をフォルダ名と最終更新日で表示する
+2. 番号で選ばせる
+3. 選んだプロジェクトの CLAUDE.md を読んで「前回からの状況」を要約して報告する
+4. 直近で変更されたファイルがあれば教える
+5. 「今日は何をしますか？」と聞く</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'p3')">📋 コピーして Claude に貼り付ける</button>
+          <button class="expand-btn" onclick="expandText('p3')">全文表示</button>
+        </div>
+      </div>
+      <div class="pc-tip">このプロンプトは初回セットアップが済んでいると、作業フォルダの場所を Claude が覚えています。</div>
+    </div>
+  </div>
+
+  <!-- Prompt 4: 作業終わりの記録 -->
+  <div class="pc rv d3">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">📝</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-daily">毎日使う</span></div>
+        <div class="pc-title">作業終わりの記録・引き継ぎ</div>
+        <div class="pc-what">今日の作業内容を自動まとめ → 明日の自分への引き継ぎメモを作成</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-result">今日変更したファイルを確認 → 作業内容を要約 → 引き継ぎメモを docs/daily/ に保存 → CLAUDE.md の「最終作業」を更新</div>
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="p4" readonly rows="12">今日の作業を終わります。引き継ぎメモを作成してください。
+
+1. 今日変更・作成したファイルを確認する
+2. 私に「今日やったこと」を聞く（箇条書きでOK）
+3. 以下の形式で引き継ぎメモを作成する：
+
+---
+# 作業ログ [今日の日付]
+## 今日やったこと
+（確認したファイルと私の回答をまとめる）
+## 明日やること・注意点
+## 未解決の問題
+---
+
+4. docs/daily/YYYYMMDD.md として保存する
+5. CLAUDE.md の「最終作業日」と「直近の状況」を更新する</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'p4')">📋 コピーして Claude に貼り付ける</button>
+          <button class="expand-btn" onclick="expandText('p4')">全文表示</button>
+        </div>
+      </div>
+      <div class="pc-tip">毎日これで終わると、翌日「プロジェクト開始ウィザード」を使ったとき Claude が昨日の状況を正確に教えてくれます。</div>
+    </div>
   </div>
 </section>
 
 <div class="div"></div>
 
-<!-- ════ 04: ROLES ════ -->
-<section id="roles">
-  <div class="ch-label reveal">Section 04</div>
-  <h2 class="reveal">あなたの<span class="grad-p">役割</span>に合わせた<br>使い方を選ぼう</h2>
-  <p class="lead reveal d1">タブを切り替えて、自分の仕事に直結するプロンプト例を確認してください。</p>
-  <div class="role-tabs reveal d2">
-    <button class="rb on" data-r="designer" onclick="setRole('designer')">🎨 デザイナー</button>
-    <button class="rb" data-r="director" onclick="setRole('director')">🎬 ディレクター</button>
-    <button class="rb" data-r="cg" onclick="setRole('cg')">✨ CGアーティスト</button>
+<!-- ════ ROLE ════ -->
+<section id="role">
+  <div class="sec-tag rv">役割別プロンプト</div>
+  <h2 class="rv">あなたの仕事に<br>そのまま使えるプロンプト</h2>
+  <p class="lead rv d1">役割を選んでコピーするだけ。カスタマイズしなくてもそのまま動きます。</p>
+
+  <div class="rtabs rv d2">
+    <button class="rb on" data-r="d" onclick="setRole('d')">🎨 デザイナー</button>
+    <button class="rb" data-r="m" onclick="setRole('m')">🎬 ディレクター</button>
+    <button class="rb" data-r="c" onclick="setRole('c')">✨ CGアーティスト</button>
   </div>
-  <div class="rc on" id="rc-designer">
-    <div class="grid">
-      <div class="gc"><div class="gc-icon">🖼️</div><div class="gc-title">アセットのリネーム</div><div class="gc-desc">命名規則に沿ったバッチリネームを自動処理。</div><div class="gc-prompt">img_001〜200を「proj_logo_v001.png」形式にリネームするスクリプトを作って</div></div>
-      <div class="gc"><div class="gc-icon">🎨</div><div class="gc-title">デザイン仕様書の生成</div><div class="gc-desc">使用フォント・カラーパレット・コンポーネント一覧を自動でまとめ。</div><div class="gc-prompt">このCSSから使用カラー・フォントをまとめたデザイン仕様書をMarkdownで作って</div></div>
-      <div class="gc"><div class="gc-icon">🌐</div><div class="gc-title">多言語テキスト対応</div><div class="gc-desc">UIテキストの翻訳・確認・不足分の検出を自動化。</div><div class="gc-prompt">このJSONの日本語テキストを自然な英語に翻訳して。キー名は変えないで</div></div>
-      <div class="gc"><div class="gc-icon">📦</div><div class="gc-title">納品物チェックリスト</div><div class="gc-desc">フォルダ内のファイルと仕様書を照合し、抜け漏れを自動検出。</div><div class="gc-prompt">納品仕様書と現在のフォルダ内容を比較して、不足ファイルをリストアップして</div></div>
-      <div class="gc"><div class="gc-icon">🔄</div><div class="gc-title">フォーマット一括変換</div><div class="gc-desc">SVGのpx→pt変換、カラーコードのHEX→RGBA一括変換など。</div><div class="gc-prompt">このSVGの全カラーコードをHEXからRGBAに変換して、透明度は1.0で</div></div>
-      <div class="gc"><div class="gc-icon">📐</div><div class="gc-title">スタイルガイド整備</div><div class="gc-desc">散在するデザインルールを読み込んで、統一ガイドラインに整理。</div><div class="gc-prompt">複数のデザインメモを読んで、統一されたスタイルガイドのMarkdownを作成して</div></div>
+
+  <!-- DESIGNER -->
+  <div class="rc on" id="rc-d">
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">🖼️</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-design">デザイナー</span></div>
+          <div class="pc-title">アセット整理＋命名規則の統一</div>
+          <div class="pc-what">フォルダを渡すと命名規則を自動チェック・修正スクリプトを生成</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">現状の命名パターンを分析 → 命名規則を確認 → 修正スクリプトを生成 → 実行前にプレビューして確認</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rd1" readonly rows="10">このフォルダのアセットを整理してください。
+
+1. フォルダ内のファイルをすべてリストアップする
+2. 現在の命名パターンを分析して、バラつきがある箇所を指摘する
+3. 私に命名規則を確認する（例：「proj_type_v001.ext にしますか？」）
+4. 確認した命名規則に沿ってリネームするスクリプトを生成する
+5. 実行前に「変更前→変更後」のプレビューを表示して確認を求める
+6. OKをもらってから実行する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rd1')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rd1')">全文表示</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">📐</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-design">デザイナー</span></div>
+          <div class="pc-title">デザイン仕様書を自動生成</div>
+          <div class="pc-what">CSS・Figmaエクスポート・デザインメモから仕様書を自動作成</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">ファイルを読み込み → カラー・フォント・コンポーネントを抽出 → Markdown 仕様書を生成 → docs/ に保存</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rd2" readonly rows="10">このプロジェクトのデザイン仕様書を作成してください。
+
+1. このフォルダにある CSS・デザインメモ・設定ファイルをすべて読む
+2. 以下の項目を自動で抽出してまとめる：
+   - カラーパレット（HEXコード付き）
+   - 使用フォントとウェイト
+   - スペーシング・サイズのルール
+   - コンポーネント一覧（あれば）
+3. 読み手はデザイナー以外でもわかるようにやさしく書く
+4. design-spec.md としてこのフォルダに保存する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rd2')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rd2')">全文表示</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">📦</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-design">デザイナー</span></div>
+          <div class="pc-title">納品物の抜け漏れチェック</div>
+          <div class="pc-what">仕様書と実際のフォルダを比較して、足りないファイルを自動リストアップ</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">仕様書（またはチェックリスト）を読み込み → フォルダ内容と照合 → 不足・過剰・命名違いを一覧表示</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rd3" readonly rows="10">納品前の最終チェックをしてください。
+
+1. 納品仕様書やチェックリストのファイルを探して読む（なければ私に仕様を教えてと聞く）
+2. 現在のフォルダ内のファイルをすべてリストアップする
+3. 仕様書と照合して以下を報告する：
+   - ✅ OKなファイル
+   - ❌ 不足しているファイル
+   - ⚠️ 命名が仕様と違うファイル
+4. 問題がある場合は修正方法を提案する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rd3')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rd3')">全文表示</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="rc" id="rc-director">
-    <div class="grid">
-      <div class="gc"><div class="gc-icon">📋</div><div class="gc-title">議事録・会議メモ整理</div><div class="gc-desc">雑然としたメモを決定事項・TODO・懸案に自動分類。</div><div class="gc-prompt">この会議メモを読んで、決定事項・アクションアイテム・未解決課題に分類して整理して</div></div>
-      <div class="gc"><div class="gc-icon">📅</div><div class="gc-title">スケジュール・進行管理</div><div class="gc-desc">タスクリストからガントチャートのたたき台を生成。</div><div class="gc-prompt">このタスク一覧から、Excelで使えるガントチャートのCSVを作って。締め切りは来月末</div></div>
-      <div class="gc"><div class="gc-icon">📝</div><div class="gc-title">仕様書・提案書の草案</div><div class="gc-desc">アイデアメモから、クライアント向け文書を自動ドラフト。</div><div class="gc-prompt">この企画メモをもとに、クライアントに提出できる仕様書のたたき台を作成して</div></div>
-      <div class="gc"><div class="gc-icon">📊</div><div class="gc-title">週次進捗レポート</div><div class="gc-desc">各メンバーの日報をまとめ、週次レポートを自動生成。</div><div class="gc-prompt">このフォルダの日報ファイルを読んで、今週の進捗サマリーレポートを作成して</div></div>
-      <div class="gc"><div class="gc-icon">🔍</div><div class="gc-title">技術調査・まとめ</div><div class="gc-desc">新技術・競合事例・業界トレンドをリサーチしてチーム向けにまとめ。</div><div class="gc-prompt">UE5.4で追加されたCG映像に使える新機能をリストアップして、実務活用例も添えて</div></div>
-      <div class="gc"><div class="gc-icon">🗂️</div><div class="gc-title">ナレッジベース構築</div><div class="gc-desc">散在するノウハウ・メモを整理し、チームwikiに変換。</div><div class="gc-prompt">このフォルダのメモや設定ファイルを読んで、新メンバー向けオンボーディングドキュメントを作って</div></div>
+
+  <!-- DIRECTOR -->
+  <div class="rc" id="rc-m">
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">📋</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-dir">ディレクター</span></div>
+          <div class="pc-title">会議メモ → 議事録に自動変換</div>
+          <div class="pc-what">箇条書きのメモを整理された議事録に変換して保存</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">メモを読み込み → 決定事項・TODO・懸案を分類 → 議事録 Markdown を生成 → docs/minutes/ に日付付きで保存</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rm1" readonly rows="12">今日の会議のメモを議事録に整理してください。
+
+[ここにメモを貼り付けてください]
+
+---
+メモを読んで以下の形式で議事録を作成してください：
+
+# 議事録 [日付] [会議名]
+## 参加者
+## 決定事項（番号付き）
+## アクションアイテム（担当者と期日付き）
+## 次回確認事項
+## 未解決の課題
+
+作成後、docs/minutes/YYYYMMDD.md に保存してください。</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rm1')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rm1')">全文表示</button>
+          </div>
+        </div>
+        <div class="pc-tip">「[ここにメモを貼り付けてください]」の部分を自分のメモに置き換えてから Claude に貼り付けてください。</div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">📊</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-dir">ディレクター</span></div>
+          <div class="pc-title">週報を自動生成</div>
+          <div class="pc-what">プロジェクトフォルダを読んで今週の週報を自動作成</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">今週の変更ファイルと日報メモを確認 → 週報を自動生成 → 確認後に report_YYYYMMDD.md に保存</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rm2" readonly rows="13">今週の週報を作成してください。
+
+1. このプロジェクトフォルダで今週（月〜今日）に変更されたファイルを確認する
+2. docs/daily/ に今週の日報ファイルがあれば読む
+3. 以下の形式で週報を作成する：
+
+---
+## 今週の成果（箇条書き 3〜5点）
+## 来週の予定（箇条書き 3〜5点）
+## 課題・ブロッカー（あれば）
+## 連絡・共有事項（あれば）
+---
+
+4. ディレクターではなく、報告先の上長が読む前提で書く（技術用語は避ける）
+5. 確認を求めて、OKなら report_YYYYMMDD.md として保存する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rm2')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rm2')">全文表示</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">🗂️</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-dir">ディレクター</span></div>
+          <div class="pc-title">新メンバー向け引き継ぎ資料を作成</div>
+          <div class="pc-what">プロジェクトフォルダを読んで、新メンバーがすぐ動けるドキュメントを自動作成</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">フォルダ構成・設定・ルールを読み込み → 「読めばわかる」引き継ぎドキュメントを生成 → onboarding.md に保存</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rm3" readonly rows="13">このプロジェクトに新しくジョインするメンバー向けの引き継ぎドキュメントを作成してください。
+
+1. このフォルダの全ファイル・フォルダ構成を読む
+2. CLAUDE.md・README・設定ファイルがあれば読む
+3. 以下の構成で引き継ぎドキュメントを作成する：
+
+## このプロジェクトについて（2〜3行）
+## チーム構成と役割
+## フォルダ構成の説明（各フォルダの用途）
+## 作業を始めるための手順（ステップ形式）
+## ファイル命名規則
+## よくある質問 / 注意点
+## 誰に聞けばいいか
+
+4. 専門知識がない人でも読めるように書く
+5. docs/onboarding.md として保存する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rm3')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rm3')">全文表示</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="rc" id="rc-cg">
-    <div class="grid">
-      <div class="gc"><div class="gc-icon">⚡</div><div class="gc-title">VEXコード生成・修正</div><div class="gc-desc">Houdiniでやりたい処理を説明するだけでVEXを書いてくれる。</div><div class="gc-prompt">PointをランダムにするVEXを書いて。削除率は@densityアトリビュートで制御したい</div></div>
-      <div class="gc"><div class="gc-icon">🐍</div><div class="gc-title">Blender Pythonスクリプト</div><div class="gc-desc">バッチ処理・アドオン・自動化スクリプトを会話形式で生成・デバッグ。</div><div class="gc-prompt">選択中のメッシュをApply ScaleしてからFBXでエクスポートするBlender Pythonを書いて</div></div>
-      <div class="gc"><div class="gc-icon">🎮</div><div class="gc-title">UE5 Blueprintサポート</div><div class="gc-desc">Blueprint設計の相談、ノードの意味の解説、最適化のアドバイス。</div><div class="gc-prompt">UE5でキャラクターが特定メッシュに近づいたらマテリアルを変えるBlueprintの設計を教えて</div></div>
-      <div class="gc"><div class="gc-icon">🔧</div><div class="gc-title">シェーダー・マテリアル</div><div class="gc-desc">GLSL・HLSL・OSL設定をサポート。エラー解読から最適化まで。</div><div class="gc-prompt">HoudiniでガラスっぽいOSLシェーダーを書いて。屈折と反射あり、IORは1.5</div></div>
-      <div class="gc"><div class="gc-icon">📐</div><div class="gc-title">技術仕様書の作成</div><div class="gc-desc">シーン設定・レンダー設定をわかりやすくドキュメント化。</div><div class="gc-prompt">このHoudiniプロジェクトのファイル構成と主要HDAを読んで、技術仕様書を作成して</div></div>
-      <div class="gc"><div class="gc-icon">🎬</div><div class="gc-title">After Effects スクリプト</div><div class="gc-desc">コンポの一括処理、エクスプレッション生成、レンダーキューの自動化。</div><div class="gc-prompt">After EffectsでコンポジションのFPSを全て24に変更するExtendScriptを書いて</div></div>
+
+  <!-- CG ARTIST -->
+  <div class="rc" id="rc-c">
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">⚡</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-cg">CGアーティスト</span></div>
+          <div class="pc-title">VEX エラーを直してもらう</div>
+          <div class="pc-what">エラーメッセージとコードを貼ると、原因と修正コードを教えてくれる</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">エラーの原因を日本語で説明 → 修正したコードを提示 → 何を変えたか説明 → 同じミスを防ぐポイントを教える</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rc1" readonly rows="14">VEXのエラーを解決してください。
+
+以下にエラーメッセージとコードを貼ります：
+
+[エラーメッセージをここに貼る]
+
+[VEXコードをここに貼る]
+
+---
+解決手順：
+1. エラーの原因を日本語でわかりやすく説明する（専門用語には説明を添える）
+2. 修正したコードを出力する（変更箇所にコメントを入れる）
+3. どこを何故修正したか説明する
+4. 同じミスを防ぐポイントを1〜2点教える</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rc1')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rc1')">全文表示</button>
+          </div>
+        </div>
+        <div class="pc-tip">[ ] の部分を自分のエラー文とコードに置き換えて使ってください。</div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">🐍</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-cg">CGアーティスト</span></div>
+          <div class="pc-title">やりたい処理を説明してスクリプトを作ってもらう</div>
+          <div class="pc-what">日本語で「こういう処理がしたい」と伝えるだけで VEX・Python・MEL を書いてくれる</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">使用ツール・目的・条件を確認 → スクリプトを生成 → 使い方の説明・注意点を添えて出力</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rc2" readonly rows="14">以下の処理を実装するスクリプトを書いてください。
+
+【ツール】（例：Houdini VEX / Blender Python / After Effects ExtendScript）
+[使うツールを書いてください]
+
+【やりたいこと】
+[やりたい処理を日本語で書いてください]
+
+【条件・制約】（あれば）
+[アトリビュート名・処理の範囲など]
+
+---
+出力形式：
+- そのまま貼り付けて動くコード
+- 各行に日本語コメントを入れる
+- 冒頭に「使い方」と「どのノード/レイヤーに使うか」を書く
+- 不明な点があれば先に質問する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rc2')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rc2')">全文表示</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pc">
+      <div class="pc-head">
+        <div class="pc-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">📐</div>
+        <div class="pc-meta">
+          <div class="pc-tags"><span class="tag tag-cg">CGアーティスト</span></div>
+          <div class="pc-title">シーンの技術仕様書を自動生成</div>
+          <div class="pc-what">プロジェクトフォルダを読んで、次の担当者がすぐ作業できる技術文書を作成</div>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-result">ファイル構成・設定・依存関係を読み込み → 技術仕様書を生成 → tech-spec.md に保存</div>
+        <div class="pc-prompt">
+          <textarea class="pc-text" id="rc3" readonly rows="13">このプロジェクトの技術仕様書を作成してください。
+
+1. このフォルダの全ファイル構成を確認する
+2. 設定ファイル・スクリプト・READMEがあれば読む
+3. 以下の形式で技術仕様書を作成する：
+
+## プロジェクト概要
+## 使用ツール・バージョン
+## ファイル構成と各ファイルの役割
+## シーン構成・主要なノード/レイヤー
+## レンダリング設定（あれば）
+## 依存関係・外部アセット
+## 作業上の注意点・既知の問題
+
+4. CGアーティストが読む前提で書く（ツール固有の用語はそのまま使ってOK）
+5. docs/tech-spec.md として保存する</textarea>
+          <div class="copy-bar">
+            <button class="copy-btn" onclick="copyPrompt(this,'rc3')">📋 コピーして Claude に貼り付ける</button>
+            <button class="expand-btn" onclick="expandText('rc3')">全文表示</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="div"></div>
 
-<!-- ════ 05: TIPS ════ -->
-<section id="tips">
-  <div class="ch-label reveal">Section 05</div>
-  <h2 class="reveal">知っておくと差がつく<br><span class="grad">Tips</span></h2>
-  <p class="lead reveal d1">セットアップ後に押さえておきたい、実務で役立つテクニック集。</p>
+<!-- ════ TROUBLE ════ -->
+<section id="trouble">
+  <div class="sec-tag rv">困ったとき</div>
+  <h2 class="rv">うまくいかないときの<br>対処プロンプト</h2>
 
-  <div class="tips-grid reveal d2">
-
-    <div class="tip-card">
-      <div class="tip-cat" style="background:#ede9fe;color:#6d28d9">💡 プロンプトのコツ</div>
-      <ul class="tip-items">
-        <li><strong>結論から書く</strong> — 「〇〇して。対象は～、出力は～」の順が精度高い</li>
-        <li><strong>エラーはそのまま貼る</strong> — コピペして「このエラーを直して」だけでOK</li>
-        <li><strong>出力形式を指定する</strong> — 「箇条書きで」「3行以内で」「表形式で」</li>
-        <li><strong>逆に聞く</strong> — 「これを実現するためにどんな情報が必要？」</li>
-      </ul>
+  <div class="pc rv d1">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">🔄</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-tool">リセット</span></div>
+        <div class="pc-title">会話が迷走したときのリセット</div>
+        <div class="pc-what">Claude の返答がズレてきたら、これを貼って仕切り直す</div>
+      </div>
     </div>
+    <div class="pc-body">
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="t1" readonly rows="7">いったんリセットします。
 
-    <div class="tip-card">
-      <div class="tip-cat" style="background:#f0fdf4;color:#166534">⚡ 時短テクニック</div>
-      <ul class="tip-items">
-        <li><strong>↑キー</strong> で前のプロンプトを再呼び出し</li>
-        <li><code class="tip-cb">/compact</code> で長くなった会話を要約してリセット（精度回復）</li>
-        <li><strong>フォルダごと渡す</strong> — 「このフォルダの全Pythonファイルを読んで」でOK</li>
-        <li>よく使う指示は <code class="tip-cb">.claude/commands/</code> にテンプレ保存 → <a href="advanced.html" style="color:var(--accent)">詳細</a></li>
-      </ul>
+今の状況を整理してください：
+1. 私がやりたいこと：[やりたいことを書く]
+2. 今の問題：[何が困っているか]
+
+これだけにフォーカスして、シンプルに答えてください。</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'t1')">📋 コピーして Claude に貼り付ける</button>
+        </div>
+      </div>
+      <div class="pc-tip">または <code>/clear</code> と入力すると会話履歴をリセットして新鮮な状態から再開できます。</div>
     </div>
+  </div>
 
-    <div class="tip-card">
-      <div class="tip-cat" style="background:#fef2f2;color:#991b1b">🚫 よくある失敗と対処</div>
-      <ul class="tip-items">
-        <li><strong>的外れな回答</strong> → 背景・条件が不足。もっと具体的に伝える</li>
-        <li><strong>処理が止まる</strong> → <code class="tip-cb">Ctrl+C</code> で中断、タスクを分割して再依頼</li>
-        <li><strong>同じ間違いを繰り返す</strong> → <code class="tip-cb">/clear</code> でリセット or CLAUDE.md に「〇〇はしないで」と明記</li>
-        <li><strong>返答が長すぎる</strong> → 「3行で」「箇条書き5点で」と制限する</li>
-      </ul>
+  <div class="pc rv d2">
+    <div class="pc-head">
+      <div class="pc-icon" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">❓</div>
+      <div class="pc-meta">
+        <div class="pc-tags"><span class="tag tag-tool">確認</span></div>
+        <div class="pc-title">Claude に「何ができるか」を聞く</div>
+        <div class="pc-what">今の状況で Claude ができることを一覧で教えてもらう</div>
+      </div>
     </div>
+    <div class="pc-body">
+      <div class="pc-prompt">
+        <textarea class="pc-text" id="t2" readonly rows="7">現在のこのプロジェクトフォルダで、あなたにできることを教えてください。
 
-    <div class="tip-card">
-      <div class="tip-cat" style="background:#eff6ff;color:#1e40af">🚀 上級テクニック</div>
-      <ul class="tip-items">
-        <li><strong>Sub-agents</strong> — 「並列で各ファイルを分析して」と指示するだけで自動分担 → <a href="advanced.html" style="color:var(--accent)">詳細</a></li>
-        <li><strong>Hooks</strong> — 「ファイル保存後に自動チェック」などの自動化</li>
-        <li><strong>Slack連携</strong> — Slackを読んで議事録を自動まとめ → <a href="integrations.html" style="color:var(--accent)">設定方法</a></li>
-        <li><strong>Notion連携</strong> — ドキュメントを読んでレポート自動生成 → <a href="integrations.html" style="color:var(--accent)">設定方法</a></li>
-      </ul>
+私の役割：[デザイナー / ディレクター / CGアーティスト]
+今日やりたいこと（大まかに）：[書いてください]
+
+具体的にできる作業を箇条書きで5〜8つ提案してください。</textarea>
+        <div class="copy-bar">
+          <button class="copy-btn" onclick="copyPrompt(this,'t2')">📋 コピーして Claude に貼り付ける</button>
+        </div>
+      </div>
     </div>
-
   </div>
 </section>
 
 <div class="div"></div>
 
-<!-- ════ 06: CUSTOMIZE ════ -->
-<section id="customize">
-  <div class="ch-label reveal">Section 06</div>
-  <h2 class="reveal">もっと使いやすく<br><span class="grad">カスタマイズ</span>する</h2>
-  <p class="lead reveal d1"><a href="glossary/claudemd.html" class="term" target="_blank">CLAUDE.md<sup>?</sup></a> をプロジェクトフォルダに置くと、Claudeが毎回チームの前提を知った状態でスタートします。</p>
-
-  <div class="sc reveal d2">
-    <p style="font-size:12px;color:var(--muted);margin-bottom:8px">プロジェクトフォルダに <code>CLAUDE.md</code> を作成して書くだけ：</p>
-    <div class="cb" style="white-space:pre;font-size:11.5px;line-height:1.75"><span style="color:#4ade80"># プロジェクト概要</span>
-<span style="color:#e2e8f0">MIXI CG映像プロジェクト。Houdini + UE5で制作。</span>
-
-<span style="color:#4ade80"># 使用ツール</span>
-<span style="color:#e2e8f0">Houdini 20.5 / UE5.4 / After Effects 2024</span>
-
-<span style="color:#4ade80"># ファイル命名規則</span>
-<span style="color:#e2e8f0">assets/textures/[asset]_[type]_v001.png</span>
-
-<span style="color:#4ade80"># 返答スタイルの希望</span>
-<span style="color:#e2e8f0">- 専門用語には日本語の説明を添えること</span>
-<span style="color:#e2e8f0">- コードには使い方コメントを入れること</span></div>
-    <div class="tip tip-p" style="margin-bottom:0"><span class="ti">💡</span><div>このファイルがあるフォルダで <code>claude</code> を起動すると、毎回この内容を読んでから会話が始まります。</div></div>
-  </div>
-
-  <h3 class="reveal" style="margin-top:34px;margin-bottom:14px">よく使うコマンド一覧</h3>
-  <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm)" class="reveal d1">
-    <table class="tbl">
-      <thead><tr><th>コマンド</th><th>説明</th></tr></thead>
-      <tbody>
-        <tr><td><code>/help</code></td><td>使えるコマンドの一覧を表示</td></tr>
-        <tr><td><code>/clear</code></td><td>会話履歴をクリアして新しいセッションを開始</td></tr>
-        <tr><td><code>/compact</code></td><td>長くなった会話を要約してリセット（コスト削減・精度回復）</td></tr>
-        <tr><td><code>/exit</code></td><td>Claude Code を終了</td></tr>
-        <tr><td><code>Ctrl + C</code></td><td>現在の処理を中断</td></tr>
-        <tr><td><code>↑ キー</code></td><td>前に入力したプロンプトを再呼び出し</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<div class="div"></div>
-
-<!-- ════ 07: NEXT ════ -->
+<!-- ════ NEXT ════ -->
 <section id="next">
-  <div class="ch-label reveal">Section 07</div>
-  <h2 class="reveal">セットアップ<span class="grad">完了！</span><br>次のステップへ</h2>
-  <p class="lead reveal d1">基本を覚えたら、さらに活用の幅を広げましょう。</p>
-
-  <div class="sc reveal d2">
-    <h3 style="margin-bottom:14px">セットアップチェックリスト</h3>
-    <ul class="cl">
-      <li><div class="ck done">✓</div><div><strong>Node.js</strong> インストール済み（v18 以上）</div></li>
-      <li><div class="ck done">✓</div><div><strong>Claude Code</strong> インストール済み</div></li>
-      <li><div class="ck done">✓</div><div><strong>認証</strong>（ブラウザログイン）完了</div></li>
-      <li><div class="ck"></div><div><strong>CLAUDE.md</strong> をプロジェクトフォルダに作成する</div></li>
-      <li><div class="ck"></div><div>役割別プロンプトを 1 つ試してみる</div></li>
-      <li><div class="ck"></div><div>Slack / Notion 連携を設定する → <a href="integrations.html" style="color:var(--accent)">連携ガイド</a></div></li>
-    </ul>
-  </div>
-
-  <div class="next-grid reveal d3">
-    <a class="nc featured" href="advanced.html">
+  <div class="sec-tag rv">次のステップ</div>
+  <h2 class="rv">さらに活用したい人へ</h2>
+  <div class="ng rv d1">
+    <a class="nc feat" href="advanced.html">
       <div class="nc-icon">🚀</div>
       <div class="nc-title">効率化セットアップガイド</div>
-      <div class="nc-desc">Slash commands・Sub-agents・Hooks — Claude を10倍速く使う方法。</div>
+      <div class="nc-desc">Slash commands・Sub-agents・Hooks — 自動化の次のレベル</div>
     </a>
-    <a class="nc featured" href="integrations.html">
+    <a class="nc feat" href="integrations.html">
       <div class="nc-icon">🔗</div>
-      <div class="nc-title">社内ツール連携（Slack・Notion）</div>
-      <div class="nc-desc">MCP でSlack・Notionと連携。Mixi の許可申請方法も解説。</div>
+      <div class="nc-title">社内ツール連携</div>
+      <div class="nc-desc">Slack・Notion・Confluence を Claude につなぐ MCP ガイド</div>
     </a>
     <a class="nc" href="discovery.html">
       <div class="nc-icon">🔭</div>
-      <div class="nc-title">機能を発見する</div>
-      <div class="nc-desc">Claude Code でできることをカテゴリ別にすべて確認。</div>
+      <div class="nc-title">機能一覧</div>
+      <div class="nc-desc">Claude Code でできること全部</div>
     </a>
     <a class="nc" href="prompts/04_制作効率化.md">
       <div class="nc-icon">⚡</div>
-      <div class="nc-title">CG制作効率化プロンプト</div>
-      <div class="nc-desc">VEX・Python・シェーダー生成テンプレート集。</div>
+      <div class="nc-title">CG制作プロンプト集</div>
+      <div class="nc-desc">VEX・Python・シェーダー生成テンプレート</div>
     </a>
     <a class="nc" href="prompts/03_ナレッジ文書化.md">
       <div class="nc-icon">📚</div>
       <div class="nc-title">ナレッジ文書化</div>
-      <div class="nc-desc">属人化防止・マニュアル化テンプレート集。</div>
-    </a>
-    <a class="nc" href="glossary/mcp.html">
-      <div class="nc-icon">🔌</div>
-      <div class="nc-title">MCPとは？（用語解説）</div>
-      <div class="nc-desc">外部ツール連携プラグインの仕組みを解説。</div>
+      <div class="nc-desc">属人化防止・マニュアル化テンプレート</div>
     </a>
   </div>
 </section>
 
 <footer>
   MIXI CG映像チーム × Claude Code &nbsp;|&nbsp;
-  <a href="discovery.html">機能一覧</a> &nbsp;|&nbsp;
   <a href="advanced.html">効率化ガイド</a> &nbsp;|&nbsp;
-  <a href="integrations.html">社内連携</a>
+  <a href="integrations.html">社内連携</a> &nbsp;|&nbsp;
+  <a href="discovery.html">機能一覧</a>
 </footer>
 
 <script>
-// Progress bar
+// Progress
 const prog = document.getElementById('prog');
-window.addEventListener('scroll', () => {
-  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  prog.style.width = Math.min(pct, 100) + '%';
-}, { passive: true });
+window.addEventListener('scroll',()=>{
+  prog.style.width = Math.min(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100,100)+'%';
+},{passive:true});
 
 // Reveal
-const io = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('shown'); }), { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+const io = new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on');}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
 // Nav active
 const secs = document.querySelectorAll('section[id]');
-const nls = document.querySelectorAll('.ns');
-new IntersectionObserver(e => {
-  e.forEach(x => { if (x.isIntersecting) { const id = x.target.id; nls.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id)); } });
-}, { threshold: 0.35 }).observe === undefined ? null : (() => { const o = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { const id = x.target.id; nls.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id)); } }); }, { threshold: 0.35 }); secs.forEach(s => o.observe(s)); })();
+const nls = document.querySelectorAll('.np');
+new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting){const id=x.target.id;nls.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+id));}});
+},{threshold:.35}).observe === undefined ? null : (()=>{
+  const o = new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){const id=x.target.id;nls.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+id));}});},{threshold:.35});
+  secs.forEach(s=>o.observe(s));
+})();
 
-// OS toggle
-function setOS(os, btn) {
-  document.querySelectorAll('.os-btn').forEach(b => b.classList.remove('on'));
+// OS
+function setOS(os,btn){
+  document.querySelectorAll('.os-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  document.querySelectorAll('.os-win').forEach(el => el.style.display = os === 'win' ? 'block' : 'none');
-  document.querySelectorAll('.os-mac').forEach(el => el.style.display = os === 'mac' ? 'block' : 'none');
+  document.querySelectorAll('.os-win').forEach(el=>el.style.display=os==='win'?'block':'none');
+  document.querySelectorAll('.os-mac').forEach(el=>el.style.display=os==='mac'?'block':'none');
 }
-document.querySelectorAll('.os-win').forEach(el => el.style.display = 'block');
-document.querySelectorAll('.os-mac').forEach(el => el.style.display = 'none');
+document.querySelectorAll('.os-win').forEach(el=>el.style.display='block');
+document.querySelectorAll('.os-mac').forEach(el=>el.style.display='none');
 
 // Role tabs
-function setRole(r) {
-  document.querySelectorAll('.rb').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.rc').forEach(c => c.classList.remove('on'));
+function setRole(r){
+  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.rc').forEach(c=>c.classList.remove('on'));
   document.querySelector(`.rb[data-r="${r}"]`).classList.add('on');
-  document.getElementById('rc-' + r).classList.add('on');
+  document.getElementById('rc-'+r).classList.add('on');
 }
 
-// Copy
-function doCopy(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = '✓ コピー済';
+// Copy prompt
+function copyPrompt(btn, id){
+  const text = document.getElementById(id).value;
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ コピーしました！Claude に貼り付けてください';
     btn.classList.add('ok');
-    setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('ok');},3000);
   });
 }
 
-// ── Search ──
-const SEARCH_INDEX = [
-  { title: 'ターミナル', url: 'glossary/terminal.html', type: '用語', desc: 'コマンドで操作するテキスト版のFinder/エクスプローラー', kw: 'terminal powershell コマンド 黒い画面' },
-  { title: 'Node.js', url: 'glossary/nodejs.html', type: '用語', desc: 'Claude Codeを動かすために必要なソフトウェア（エンジン）', kw: 'node npm インストール エンジン' },
-  { title: 'APIキー', url: 'glossary/apikey.html', type: '用語', desc: 'あなただけに発行される認証パスワード', kw: 'api key 認証 課金 パスワード' },
-  { title: 'CLAUDE.md', url: 'glossary/claudemd.html', type: '用語', desc: 'Claudeへのチーム説明書。一度書けば毎回読んでくれる', kw: 'claude md 設定 ブリーフィング カスタマイズ' },
-  { title: 'MCP', url: 'glossary/mcp.html', type: '用語', desc: '外部ツールとつなぐプラグイン（Slack・Notionなど）', kw: 'mcp slack notion 連携 拡張 プラグイン' },
-  { title: 'プロンプト', url: 'glossary/prompt.html', type: '用語', desc: 'AIへの指示文。うまく伝えるほど返答の質が上がる', kw: 'prompt 指示 テキスト 書き方 コツ' },
-  { title: 'Slack連携の設定方法', url: 'integrations.html', type: '連携', desc: 'SlackのメッセージをClaudeに読ませる・投稿させる設定', kw: 'slack mcp 連携 チャンネル メッセージ' },
-  { title: 'Notion連携の設定方法', url: 'integrations.html', type: '連携', desc: 'NotionドキュメントをClaudeで読み書きする設定', kw: 'notion mcp database wiki ドキュメント' },
-  { title: 'Sub-agents（並列処理）', url: 'advanced.html', type: '上級', desc: '複数のClaudeを同時に動かして複雑なタスクをこなす', kw: 'sub agent 並列 advanced 高度 効率' },
-  { title: 'Slash commands', url: 'advanced.html', type: '上級', desc: 'よく使うプロンプトをコマンド化して一発呼び出し', kw: 'slash command テンプレート 自動化 効率化' },
-  { title: 'Hooks（自動化）', url: 'advanced.html', type: '上級', desc: 'ファイル保存後・コミット前に自動でClaudeに処理させる', kw: 'hook hooks 自動化 trigger' },
-  { title: 'セットアップ手順', url: '#setup', type: 'セクション', desc: 'Node.jsのインストールからClaude Code起動まで', kw: 'setup install セットアップ インストール 起動' },
-  { title: 'デザイナー向け使い方', url: '#roles', type: 'セクション', desc: 'アセット整理・仕様書作成・フォーマット変換', kw: 'designer デザイン figma asset リネーム' },
-  { title: 'CGアーティスト向け使い方', url: '#roles', type: 'セクション', desc: 'VEX・Python・Blender・UE5・After Effects', kw: 'vex houdini blender ue5 cg python script' },
-  { title: 'ディレクター向け使い方', url: '#roles', type: 'セクション', desc: '議事録・スケジュール・仕様書・レポート自動化', kw: 'director 議事録 スケジュール レポート ガント' },
-  { title: 'エラーの対処法', url: '#tips', type: 'Tips', desc: 'エラーはそのままコピペして貼るだけでOK', kw: 'error エラー 修正 fix バグ' },
-  { title: 'プロンプトのコツ', url: '#tips', type: 'Tips', desc: '良い指示文の作り方：背景・条件・出力形式を揃える', kw: 'prompt コツ 書き方 精度' },
-  { title: '/compact コマンド', url: '#tips', type: 'Tips', desc: '長くなった会話を要約してリセット。精度が回復する', kw: 'compact clear reset リセット 要約' },
-];
+// Copy small
+function doCopy(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent='✓';
+    setTimeout(()=>{btn.textContent=orig;},1500);
+  });
+}
 
-const BADGE_MAP = { '用語': 'sr-b-term', '連携': 'sr-b-link', '上級': 'sr-b-sec', 'Tips': 'sr-b-tips', 'セクション': 'sr-b-sec' };
-
-const sinput = document.getElementById('searchInput');
-const sresults = document.getElementById('searchResults');
-
-sinput.addEventListener('input', () => {
-  const q = sinput.value.trim().toLowerCase();
-  if (!q) { sresults.classList.remove('open'); return; }
-  const hits = SEARCH_INDEX.filter(item =>
-    item.title.toLowerCase().includes(q) ||
-    item.desc.toLowerCase().includes(q) ||
-    item.kw.toLowerCase().includes(q)
-  ).slice(0, 7);
-  if (!hits.length) {
-    sresults.innerHTML = '<div class="sr-empty">見つかりませんでした。別のキーワードをお試しください。</div>';
-  } else {
-    sresults.innerHTML = hits.map(h => `
-      <a class="sr-item" href="${h.url}" ${h.url.startsWith('http') || !h.url.startsWith('#') ? 'target="_blank"' : ''}>
-        <span class="sr-badge ${BADGE_MAP[h.type] || 'sr-b-sec'}">${h.type}</span>
-        <div class="sr-content">
-          <div class="sr-title">${h.title}</div>
-          <div class="sr-desc">${h.desc}</div>
-        </div>
-      </a>`).join('');
-  }
-  sresults.classList.add('open');
-});
-
-document.addEventListener('click', e => {
-  if (!sinput.contains(e.target) && !sresults.contains(e.target)) sresults.classList.remove('open');
-});
-
-// Nav active section (fix)
-const secObs = new IntersectionObserver(e => {
-  e.forEach(x => { if (x.isIntersecting) { const id = x.target.id; nls.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id)); } });
-}, { threshold: 0.35 });
-secs.forEach(s => secObs.observe(s));
+// Expand textarea
+function expandText(id){
+  const el = document.getElementById(id);
+  el.style.minHeight = 'auto';
+  el.rows = el.value.split('\n').length + 2;
+  el.classList.add('expanded');
+}
 </script>
 </body>
 </html>
