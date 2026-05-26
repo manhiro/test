@@ -9,7 +9,7 @@
   --bg:#f5f5f7;--s1:#ffffff;--s2:#f9f9fb;--border:#e4e4e7;
   --text:#1a1a2e;--muted:#71717a;--accent:#6d4aff;--accent2:#8b5cf6;
   --green:#16a34a;--cyan:#0891b2;--pink:#db2777;--yellow:#ca8a04;
-  --slack:#4a154b;--notion:#191919;
+  --slack:#4a154b;--notion:#191919;--confluence:#0052cc;
   --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow:0 4px 16px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -28,6 +28,9 @@ nav{position:fixed;top:3px;left:0;right:0;z-index:300;background:rgba(255,255,25
 .badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;margin-bottom:14px;text-transform:uppercase}
 .badge-slack{background:#f4e6f7;border:1px solid #d8b4e2;color:#4a154b}
 .badge-notion{background:#f1f1ef;border:1px solid #d9d9d9;color:#37352f}
+.badge-confluence{background:#e6f0ff;border:1px solid #b3d0ff;color:#0052cc}
+.sn-confluence{background:#0052cc;color:#fff}
+.card-confluence{border-top:3px solid #0052cc}
 .badge-warn{background:#fef9c3;border:1px solid #fde68a;color:#92400e}
 h1{font-size:clamp(28px,5vw,46px);font-weight:900;line-height:1.1;margin-bottom:12px;letter-spacing:-.02em}
 h1 em{font-style:normal;background:linear-gradient(135deg,#4a154b,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -115,10 +118,13 @@ footer a{color:var(--accent);text-decoration:none}
 <div class="wrap">
 
   <div class="hero">
-    <div class="badge badge-slack" style="margin-right:6px">Slack</div>
-    <div class="badge badge-notion">Notion</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">
+      <div class="badge badge-slack">Slack</div>
+      <div class="badge badge-notion">Notion</div>
+      <div class="badge badge-confluence">Confluence</div>
+    </div>
     <h1 style="margin-top:12px">社内ツール<em>連携</em>ガイド</h1>
-    <p class="lead">MCP（Model Context Protocol）を使うと、Claude Code が Slack や Notion と直接やりとりできるようになります。<br>ミーティングメモの自動まとめ、Notion ドキュメントの読み書きが会話形式で。</p>
+    <p class="lead">MCP（Model Context Protocol）を使うと、Claude Code が Slack・Notion・Confluence と直接やりとりできるようになります。<br>議事録の自動まとめ、ドキュメントの読み書きが会話形式で完結します。</p>
   </div>
 
   <!-- ── 許可確認 ── -->
@@ -299,6 +305,109 @@ footer a{color:var(--accent);text-decoration:none}
     </div>
   </div>
 
+  <!-- ── Confluence ── -->
+  <div class="section">
+    <div class="sec-label">Tool 03</div>
+    <div class="tool-header">
+      <div class="tool-icon" style="background:#0052cc;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px">📘</div>
+      <div><div class="tool-name">Confluence MCP</div><div class="tool-sub">ページを読む・ドキュメントを自動更新する</div></div>
+    </div>
+
+    <div class="card card-confluence">
+      <h3 style="margin-bottom:16px">できること</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="example-card">
+          <div class="ex-label">仕様書の読み込み</div>
+          <div class="ex-prompt">Confluenceの「プロジェクト仕様」ページを読んで、実装済みと未実装の機能を分類して</div>
+          <div class="ex-result">✓ 実装済み: 8件 / 未実装: 4件 を整理しました</div>
+        </div>
+        <div class="example-card">
+          <div class="ex-label">ページ自動更新</div>
+          <div class="ex-prompt">今週の作業ログをもとに「進捗レポート」ページを更新して</div>
+          <div class="ex-result">✓ 進捗ページに今週分を追記しました</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:16px">セットアップ手順</h3>
+
+      <div class="tip tip-p" style="margin-bottom:16px">
+        <span class="ti">📌</span>
+        <div>Confluence <strong>Cloud 版</strong>（atlassian.net）と<strong>Server/Data Center 版</strong>（社内URL）で認証方法が異なります。社内の Confluence URL を確認してから進めてください。</div>
+      </div>
+
+      <ul class="steps">
+        <li class="step">
+          <div class="sn sn-confluence">1</div>
+          <div class="step-body">
+            <div class="step-title">API トークンを発行する</div>
+            <div class="step-desc">
+              <strong>Cloud 版：</strong><code>id.atlassian.com/manage-profile/security/api-tokens</code> にアクセス → 「Create API token」→ トークンをコピー。<br><br>
+              <strong>Server/Data Center 版：</strong>Confluence にログイン → 右上のアイコン → 「プロフィール」→「個人用アクセストークン」→ 「トークンを作成」。
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="sn sn-confluence">2</div>
+          <div class="step-body">
+            <div class="step-title">MCP 設定ファイルに追加する</div>
+          </div>
+        </li>
+      </ul>
+
+      <div style="margin-top:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase">☁️ Cloud 版（atlassian.net）</div>
+        <div class="cb" style="font-size:11.5px;white-space:pre;line-height:1.75"><span class="cs">"confluence"</span><span class="cv">: {</span>
+  <span class="cs">"command"</span><span class="cv">: </span><span class="cs">"npx"</span><span class="cv">,</span>
+  <span class="cs">"args"</span><span class="cv">: [</span><span class="cs">"-y"</span><span class="cv">, </span><span class="cs">"@sooperset/mcp-atlassian"</span><span class="cv">],</span>
+  <span class="cs">"env"</span><span class="cv">: {</span>
+    <span class="cs">"CONFLUENCE_URL"</span><span class="cv">:      </span><span class="cs">"https://yourcompany.atlassian.net"</span><span class="cv">,</span>
+    <span class="cs">"CONFLUENCE_USERNAME"</span><span class="cv">: </span><span class="cs">"your@email.com"</span><span class="cv">,</span>
+    <span class="cs">"CONFLUENCE_API_TOKEN"</span><span class="cv">: </span><span class="cs">"your-api-token"</span>
+  <span class="cv">}</span>
+<span class="cv">}</span></div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin:12px 0 8px;text-transform:uppercase">🏢 Server / Data Center 版（社内URL）</div>
+        <div class="cb" style="font-size:11.5px;white-space:pre;line-height:1.75"><span class="cs">"confluence"</span><span class="cv">: {</span>
+  <span class="cs">"command"</span><span class="cv">: </span><span class="cs">"npx"</span><span class="cv">,</span>
+  <span class="cs">"args"</span><span class="cv">: [</span><span class="cs">"-y"</span><span class="cv">, </span><span class="cs">"@sooperset/mcp-atlassian"</span><span class="cv">],</span>
+  <span class="cs">"env"</span><span class="cv">: {</span>
+    <span class="cs">"CONFLUENCE_URL"</span><span class="cv">:           </span><span class="cs">"https://confluence.mixi.co.jp"</span><span class="cv">,</span>
+    <span class="cs">"CONFLUENCE_PERSONAL_TOKEN"</span><span class="cv">: </span><span class="cs">"your-personal-access-token"</span>
+  <span class="cv">}</span>
+<span class="cv">}</span></div>
+      </div>
+
+      <div class="tip tip-g" style="margin-top:14px"><span class="ti">✅</span><div><code>claude</code> を再起動して「Confluenceの〇〇ページを読んで」と話しかけてみましょう。スペースキー一覧の確認には「どのConfluenceスペースにアクセスできる？」と聞くのが簡単です。</div></div>
+    </div>
+  </div>
+
+  <!-- ── 全ツール組み合わせ設定例 ── -->
+  <div class="section">
+    <div class="sec-label">まとめ設定</div>
+    <h2>3ツール同時設定の例</h2>
+    <p style="margin-bottom:12px">すべて <code>~/.claude/mcp_servers.json</code> にまとめて書けます。</p>
+    <div class="cb" style="font-size:11.5px;white-space:pre;line-height:1.75"><span class="cm">{</span>
+  <span class="cs">"mcpServers"</span><span class="cv">: {</span>
+    <span class="cs">"slack"</span><span class="cv">: {</span>
+      <span class="cs">"command"</span><span class="cv">: </span><span class="cs">"npx"</span><span class="cv">, </span><span class="cs">"args"</span><span class="cv">: [</span><span class="cs">"-y"</span><span class="cv">, </span><span class="cs">"@modelcontextprotocol/server-slack"</span><span class="cv">],</span>
+      <span class="cs">"env"</span><span class="cv">: { </span><span class="cs">"SLACK_BOT_TOKEN"</span><span class="cv">: </span><span class="cs">"xoxb-..."</span><span class="cv">, </span><span class="cs">"SLACK_TEAM_ID"</span><span class="cv">: </span><span class="cs">"T..."</span><span class="cv"> }</span>
+    <span class="cv">},</span>
+    <span class="cs">"notion"</span><span class="cv">: {</span>
+      <span class="cs">"command"</span><span class="cv">: </span><span class="cs">"npx"</span><span class="cv">, </span><span class="cs">"args"</span><span class="cv">: [</span><span class="cs">"-y"</span><span class="cv">, </span><span class="cs">"@notionhq/notion-mcp-server"</span><span class="cv">],</span>
+      <span class="cs">"env"</span><span class="cv">: { </span><span class="cs">"OPENAPI_MCP_HEADERS"</span><span class="cv">: </span><span class="cs">"{\"Authorization\": \"Bearer ntn-...\"}"</span><span class="cv"> }</span>
+    <span class="cv">},</span>
+    <span class="cs">"confluence"</span><span class="cv">: {</span>
+      <span class="cs">"command"</span><span class="cv">: </span><span class="cs">"npx"</span><span class="cv">, </span><span class="cs">"args"</span><span class="cv">: [</span><span class="cs">"-y"</span><span class="cv">, </span><span class="cs">"@sooperset/mcp-atlassian"</span><span class="cv">],</span>
+      <span class="cs">"env"</span><span class="cv">: { </span><span class="cs">"CONFLUENCE_URL"</span><span class="cv">: </span><span class="cs">"https://yourcompany.atlassian.net"</span><span class="cv">,</span>
+               <span class="cs">"CONFLUENCE_USERNAME"</span><span class="cv">: </span><span class="cs">"your@email.com"</span><span class="cv">,</span>
+               <span class="cs">"CONFLUENCE_API_TOKEN"</span><span class="cv">: </span><span class="cs">"your-token"</span><span class="cv"> }</span>
+    <span class="cv">}</span>
+  <span class="cv">}</span>
+<span class="cm">}</span></div>
+  </div>
+
   <!-- ── 活用例 ── -->
   <div class="section">
     <div class="sec-label">活用例</div>
@@ -321,6 +430,18 @@ footer a{color:var(--accent);text-decoration:none}
         <h3>技術情報の定期まとめ</h3>
         <p>Slackの技術チャンネルを毎週まとめてNotionのナレッジベースに蓄積。</p>
         <div style="font-size:11.5px;font-family:monospace;background:#f5f3ff;border-radius:8px;padding:8px;color:#5b21b6;margin-top:10px">#tech-share の今週の投稿をジャンル別に整理して、NotionのTILページに追記して</div>
+      </div>
+      <div class="card" style="margin-bottom:0;border-top:2px solid #0052cc">
+        <div style="font-size:22px;margin-bottom:8px">📘</div>
+        <h3>Confluence × Slack 横断まとめ</h3>
+        <p>Confluenceの仕様書とSlackの議論を突き合わせて、仕様の認識ズレを自動検出。</p>
+        <div style="font-size:11.5px;font-family:monospace;background:#e6f0ff;border-radius:8px;padding:8px;color:#0052cc;margin-top:10px">Confluenceの「画面仕様書v2」とSlack #design の今週の議論を読んで、仕様との差異があればリストアップして</div>
+      </div>
+      <div class="card" style="margin-bottom:0;border-top:2px solid #0052cc">
+        <div style="font-size:22px;margin-bottom:8px">🔄</div>
+        <h3>ドキュメントの鮮度チェック</h3>
+        <p>Confluenceのページが実際の実装と乖離していないか定期チェック。</p>
+        <div style="font-size:11.5px;font-family:monospace;background:#e6f0ff;border-radius:8px;padding:8px;color:#0052cc;margin-top:10px">Confluenceの「パイプライン設計書」とこのフォルダのコードを比較して、ドキュメントが古くなっている箇所を教えて</div>
       </div>
     </div>
   </div>
